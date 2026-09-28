@@ -526,7 +526,7 @@ Follow our events live or replay them later.
             buffer,
             ext,
             optimize=True,
-            quality=(40 if ext == "AVIF" else 80),
+            quality=80,
         )
         return buffer.getvalue()
 
@@ -578,7 +578,7 @@ Follow our events live or replay them later.
             buffer,
             mime[6:].upper(),
             optimize=True,
-            quality=(80 if mime == "image/jpeg" else 40),
+            quality=80,
         )
         data_out = buffer.getvalue()
         cache.set(cache_key, data_out, DURATION_ONE_MONTH)
@@ -777,7 +777,7 @@ class Map(models.Model, SomewhereOnEarth):
             out_buffer,
             mime[6:].upper(),
             optimize=True,
-            quality=(40 if mime in ("image/webp", "image/avif") else 80),
+            quality=80,
         )
         image = out_buffer.getvalue()
         cache.set(cache_key, image, DURATION_ONE_MONTH)
@@ -1196,11 +1196,11 @@ class Map(models.Model, SomewhereOnEarth):
             color_converted = cv2.cvtColor(tile_img, cv2.COLOR_BGRA2RGBA)
             pil_image = Image.fromarray(color_converted)
             buffer = BytesIO()
-            pil_image.save(buffer, img_mime[6:].upper(), optimize=True, quality=40)
+            pil_image.save(buffer, img_mime[6:].upper(), optimize=True, quality=80)
             data_out = buffer.getvalue()
         else:
             if img_mime == "image/webp":
-                extra_args = [int(cv2.IMWRITE_WEBP_QUALITY), 40]
+                extra_args = [int(cv2.IMWRITE_WEBP_QUALITY), 80]
             elif img_mime == "image/jpeg":
                 extra_args = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
             _, buffer = cv2.imencode(f".{img_mime[6:]}", tile_img, extra_args)
@@ -1380,7 +1380,7 @@ class Map(models.Model, SomewhereOnEarth):
             new_image.alpha_composite(pil_img_warped, (0, 0))
         params = {
             "dpi": (72, 72),
-            "quality": 40,
+            "quality": 80,
         }
         out_buffer = BytesIO()
         new_image.save(out_buffer, "WEBP", **params)
@@ -1450,7 +1450,7 @@ class Map(models.Model, SomewhereOnEarth):
 
         params = {
             "dpi": (72, 72),
-            "quality": 40,
+            "quality": 80,
         }
         out_buffer = BytesIO()
         new_image.save(out_buffer, "WEBP", **params)
@@ -2422,7 +2422,7 @@ class Event(models.Model, SomewhereOnEarth):
             buffer,
             mime[6:].upper(),
             optimize=True,
-            quality=(40 if mime in ("image/webp", "image/avif") else 80),
+            quality=80,
         )
 
         data_out = buffer.getvalue()

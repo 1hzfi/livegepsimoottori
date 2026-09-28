@@ -123,7 +123,7 @@ def serve_image_from_s3(
             out_buffer,
             mime[6:].upper(),
             optimize=True,
-            quality=(40 if mime in ("image/webp", "image/avif") else 80),
+            quality=80,
         )
         image = out_buffer.getvalue()
         cache.set(cache_key, image, DURATION_ONE_MONTH)

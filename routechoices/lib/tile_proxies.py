@@ -64,7 +64,7 @@ class CustomCrsWms2WebMercatorWmtsProxy:
         if not data:
             im = Image.new(mode="RGB", size=(256, 256), color=(255, 255, 255))
             img = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGRA)
-            _, buffer = cv2.imencode(".webp", img, [int(cv2.IMWRITE_WEBP_QUALITY), 40])
+            _, buffer = cv2.imencode(".webp", img, [int(cv2.IMWRITE_WEBP_QUALITY), 80])
             data_out = BytesIO(buffer)
 
             cache.set(cache_key, data_out, TILE_CACHE_TIMEOUT)
@@ -103,7 +103,7 @@ class CustomCrsWms2WebMercatorWmtsProxy:
             borderMode=cv2.BORDER_CONSTANT,
             borderValue=(255, 255, 255, 0),
         )
-        _, buffer = cv2.imencode(".webp", img, [int(cv2.IMWRITE_WEBP_QUALITY), 40])
+        _, buffer = cv2.imencode(".webp", img, [int(cv2.IMWRITE_WEBP_QUALITY), 80])
         data_out = BytesIO(buffer)
 
         cache.set(cache_key, data_out, TILE_CACHE_TIMEOUT)
@@ -279,7 +279,7 @@ class CustomCrsWmts2WebMercatorWmtsProxy:
             borderMode=cv2.BORDER_CONSTANT,
             borderValue=(255, 255, 255, 0),
         )
-        _, buffer = cv2.imencode(".webp", img, [int(cv2.IMWRITE_WEBP_QUALITY), 40])
+        _, buffer = cv2.imencode(".webp", img, [int(cv2.IMWRITE_WEBP_QUALITY), 80])
         data_out = BytesIO(buffer)
         if cache_key:
             cache.set(cache_key, data_out, TILE_CACHE_TIMEOUT)
