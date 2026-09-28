@@ -4,7 +4,7 @@ import socket
 import threading
 import time
 from datetime import UTC, datetime
-import time_machine
+
 import arrow
 import time_machine
 from allauth.account.models import EmailAddress
@@ -1383,11 +1383,11 @@ class CompetitionTestCase(EssentialApiBase):
             self.assertEqual(len(mail.outbox), 0)
             event.emergency_contacts = "beargrills@discovery.com"
             event.save()
-        
+
             device.send_sos()
             self.assertEqual(len(mail.outbox), 1)
             self.assertEqual(["beargrills@discovery.com"], mail.outbox[0].to)
-            # Should not send a new email right away, if triggered again 
+            # Should not send a new email right away, if triggered again
             device.add_location(arrow.get().timestamp() + 10, 12.34568, 123.45679)
             device.send_sos()
             self.assertEqual(len(mail.outbox), 1)
@@ -1395,6 +1395,7 @@ class CompetitionTestCase(EssentialApiBase):
             traveller.shift(15 * 60 + 1)
             device.send_sos()
             self.assertEqual(len(mail.outbox), 2)
+
 
 class RegistrationApiTestCase(EssentialApiBase):
     def test_registration(self):
