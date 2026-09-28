@@ -9,7 +9,7 @@ from io import BytesIO
 from operator import itemgetter
 
 import arrow
-import cairosvg
+import resvg_py
 from curl_cffi import requests
 from django.core.files.base import ContentFile
 from PIL import Image, ImageDraw, ImageFont
@@ -254,12 +254,16 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
                 if r.status_code != 200:
                     raise MapsImportError("Could not download image")
 
-                out = BytesIO()
-                cairosvg.svg2png(
-                    bytestring=r.content, write_to=out, unsafe=True, scale=4
+                png_bytes = resvg_py.svg_to_bytes(
+                    svg_string=r.content.decode(),
+                    background=None,
+                    zoom=4,
+                    width=None,
+                    height=None,
+                    dpi=300,
                 )
 
-                img_blob = ContentFile(out.getbuffer())
+                img_blob = ContentFile(BytesIO(png_bytes))
 
                 course_map.image.save("imported_image", img_blob, save=False)
                 max_pixels = Image.MAX_IMAGE_PIXELS
@@ -296,7 +300,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
 
                 line_width = int(8 * map_resolution * upscale)
                 circle_radius = 40 * map_resolution
-                line_color = (185, 42, 247, 180)
+                line_color = (165, 38, 255, 190)
                 ctrls = [
                     map_obj.wsg84_to_map_xy(
                         (
@@ -531,6 +535,10 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
                 params = {
                     "dpi": (72, 72),
                 }
+                map_drawing = map_drawing.resize(
+                    (map_drawing.width // upscale, map_drawing.height // upscale),
+                    resample=Image.Resampling.LANCZOS,
+                )
                 map_drawing.save(out_buffer, "PNG", **params)
                 f_new = ContentFile(out_buffer.getvalue())
                 course_map = Map(name=f"Course {i+1}")

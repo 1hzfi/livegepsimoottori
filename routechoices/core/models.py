@@ -1244,7 +1244,7 @@ class Map(models.Model, SomewhereOnEarth):
         min_lon = 180
         max_lon = -180
 
-        line_color = (0xF5, 0x2F, 0xE4, 160)
+        line_color = (0xF5, 0x2F, 0xE4, 190)
 
         all_segs = seg
         if waypoints:

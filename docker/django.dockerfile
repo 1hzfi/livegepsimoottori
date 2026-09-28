@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends g++ gcc libcairo2-dev libjpeg-dev zlib1g-dev libwebp-dev libmagic-dev libpq5
+    apt-get install -y --no-install-recommends g++ gcc libjpeg-dev zlib1g-dev libwebp-dev libmagic-dev libpq5
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
@@ -32,7 +32,7 @@ RUN find /opt/venv -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null; \
 FROM python:3.14-slim AS final
 
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends libcairo2 libglib2.0-0 libmagic1 && \
+    apt-get install -y --no-install-recommends libglib2.0-0 libmagic1 && \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man

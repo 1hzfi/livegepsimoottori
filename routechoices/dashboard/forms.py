@@ -7,10 +7,10 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import arrow
-import cairosvg
 import geojson_validator
 import gpxpy
 import orjson as json
+import resvg_py
 from curl_cffi import requests
 from defusedxml import minidom
 from django.contrib.auth.models import User
@@ -975,11 +975,15 @@ class UploadKmzForm(Form):
 
                 if is_valid_svg(file_data):
                     # map is in SVG format, convert to image
-                    image_data = BytesIO()
-                    cairosvg.svg2png(
-                        bytestring=file_data, write_to=image_data, unsafe=True, scale=4
+                    image_data = resvg_py.svg_to_bytes(
+                        svg_string=file_data.decode(),
+                        background=None,
+                        zoom=4,
+                        width=None,
+                        height=None,
+                        dpi=300,
                     )
-                    image_file = File(image_data)
+                    image_file = File(BytesIO(image_data))
                 elif is_valid_pil_image(BytesIO(file_data)):
                     image_file = File(BytesIO(file_data))
                 else:
