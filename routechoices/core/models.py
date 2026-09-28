@@ -6,6 +6,7 @@ import re
 import socket
 import time
 import uuid
+from array import array
 from datetime import timedelta
 from io import BytesIO
 from operator import itemgetter
@@ -2772,12 +2773,15 @@ class Device(models.Model, SomewhereOnEarth):
         sorted_new_locations = sorted(
             new_locations, key=itemgetter(LOCATION_TIMESTAMP_INDEX)
         )
-        freshness_cutoff = None
-        if self._last_location_datetime:
-            freshness_cutoff = self._last_location_datetime.timestamp()
 
+        last_timestamp_stored = None
+        if self._last_location_datetime:
+            last_timestamp_stored = self._last_location_datetime.timestamp()
+
+        # First we validate and separate the locations that depending on
+        # wether they are before or after the last datetime stored
+        past_new_locs = []
         fresh_new_locs = []
-        old_new_locs = []
         prev_ts = None
         country = None
         for loc in sorted_new_locations:
@@ -2794,57 +2798,71 @@ class Device(models.Model, SomewhereOnEarth):
                 validate_longitude(lon)
             except Exception:
                 continue
+
             if not country:
                 country = country_code_at_coords(Wgs84Coordinate(lat, lon))
                 if country in getattr(settings, "BANNED_COUNTRIES", []):
                     return
-            prev_ts = ts
 
+            prev_ts = ts
             validated_loc = (ts, lat, lon)
-            if freshness_cutoff is not None and ts <= freshness_cutoff:
-                old_new_locs.append(validated_loc)
+            if last_timestamp_stored is not None and ts <= last_timestamp_stored:
+                past_new_locs.append(validated_loc)
             else:
                 fresh_new_locs.append(validated_loc)
 
-        if not fresh_new_locs and not old_new_locs:
-            if save:
-                self.save()
-            return
-
-        cleaned_old_new_locs = []
-        if old_new_locs:
-            locations = self.locations
-            existing_ts = set(list(zip(*locations))[LOCATION_TIMESTAMP_INDEX])
-            for loc in old_new_locs:
-                ts = int(loc[LOCATION_TIMESTAMP_INDEX])
-                if ts in existing_ts:
+        # There is locations to be added before the last datetime already stored
+        # Filter out locations that have a timestamp already stored and
+        # write the new encoded location string
+        past_new_locs_clean = []
+        if past_new_locs:
+            locations = []
+            ts = []
+            lng = []
+            lat = []
+            latb = None
+            lngb = None
+            existing_ts = set()
+            if self.locations_encoded:
+                tsb, latb, lngb = gps_data_codec.decode_buffers(self.locations_encoded)
+                ts = array("q")
+                ts.frombytes(tsb)
+                existing_ts = set(ts)
+            for loc in past_new_locs:
+                timestamp = int(loc[LOCATION_TIMESTAMP_INDEX])
+                if timestamp in existing_ts:
                     continue
-                cleaned_old_new_locs.append(loc)
-                existing_ts.add(ts)
-            if cleaned_old_new_locs:
-                locations += cleaned_old_new_locs
+                existing_ts.add(timestamp)
+                past_new_locs_clean.append(loc)
+            if past_new_locs_clean:
+                if latb:
+                    lat = array("d")
+                    lng = array("d")
+                    lat.frombytes(latb)
+                    lng.frombytes(lngb)
+                    locations = list(zip(ts, lat, lng))
+                locations += past_new_locs_clean
                 sorted_locations = sorted(
                     locations, key=itemgetter(LOCATION_TIMESTAMP_INDEX)
                 )
                 self.locations_encoded = gps_data_codec.encode(sorted_locations)
+
+        # There is locations that are all after the last known location date
         if fresh_new_locs:
-            # Only fresher points, can append string
+            # Only fresher points, we do string appending using what we know about the last location and the codec
             locs_to_encode = []
-            if self.last_location is not None:
-                locs_to_encode = [self.last_location]
-            # Encoding magic
+
+            prefix_offset = 0
+            if self.last_location:
+                locs_to_encode += [self.last_location]
+                prefix_offset = len(gps_data_codec.encode(locs_to_encode))
+
             locs_to_encode += fresh_new_locs
             encoded_addition = gps_data_codec.encode(locs_to_encode)
-            if self.last_location is not None:
-                offset = 0
-                number_count = 0
-                for i, character in enumerate(encoded_addition):
-                    if ord(character) - 63 < 0x20:
-                        number_count += 1
-                        if number_count == 3:
-                            offset = i + 1
-                            break
-                encoded_addition = encoded_addition[offset:]
+
+            if prefix_offset:
+                encoded_addition = encoded_addition[prefix_offset:]
+
             self.locations_encoded += encoded_addition
             # Updating cache
             new_last_loc = fresh_new_locs[-1]
@@ -2854,7 +2872,7 @@ class Device(models.Model, SomewhereOnEarth):
             self._last_location_latitude = new_last_loc[LOCATION_LATITUDE_INDEX]
             self._last_location_longitude = new_last_loc[LOCATION_LONGITUDE_INDEX]
 
-        added_locs = cleaned_old_new_locs + fresh_new_locs
+        added_locs = past_new_locs_clean + fresh_new_locs
         if added_locs:
             self._location_count += len(added_locs)
             if save:
