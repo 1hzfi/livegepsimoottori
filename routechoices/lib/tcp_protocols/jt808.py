@@ -159,7 +159,7 @@ class JT808Connection(GenericConnection):
 
     def read_date(self, buf, timezone="UTC"):
         year = read_bcd_integer(buf, 2)
-        month = read_bcd_integer(buf, 2)
+        month = read_bcd_integer(buf, 2) + 1
         day = read_bcd_integer(buf, 2)
         hour = read_bcd_integer(buf, 2)
         minute = read_bcd_integer(buf, 2)
@@ -308,7 +308,7 @@ class JT808Connection(GenericConnection):
             )
         )
 
-    async def send_general_response2(self, dev_id, data_type, index):
+    async def send_general_response2(self, dev_id, data_type):
         response = BytesIO()
         response.write(pack(">H", data_type))
         response.write(b"\x00")
