@@ -12,6 +12,7 @@ from routechoices.core.models import Device, ImeiDevice
 from routechoices.lib.tcp_protocols.codec8 import TCPServer as TMT250Server
 from routechoices.lib.tcp_protocols.gt06 import TCPServer as GT06Server
 from routechoices.lib.tcp_protocols.h02 import TCPServer as H02Server
+from routechoices.lib.tcp_protocols.jt808 import TCPServer as JT808Server
 from routechoices.lib.tcp_protocols.mictrack import TCPServer as MicTrackServer
 from routechoices.lib.tcp_protocols.queclink import TCPServer as QueclinkServer
 from routechoices.lib.tcp_protocols.tracktape import TCPServer as TrackTapeServer
@@ -97,6 +98,25 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
             device = await refresh_device(device)
             self.assertEqual(device.location_count, nb_positions)
 
+        if server is not None:
+            server.stop()
+        if client is not None:
+            client.close()
+
+    @gen_test
+    async def test_jt808(self):
+        gps_data = "7e02000048051160004464000d00000000000c00020159885e06cbf34400000000000020080718072201040000000130011c310109e4020063e50100e60100e7080000000000000000ee0a01cc01262c009a6743001e7e"
+        server = client = None
+        device = await create_imei_device("051160004464004")
+        sock, port = bind_unused_port()
+        server = JT808Server()
+        server.add_socket(sock)
+        client = IOStream(socket.socket())
+        await client.connect(("localhost", port))
+        await client.write(bytes.fromhex(gps_data))
+        await asyncio.sleep(0.05)
+        device = await refresh_device(device)
+        self.assertEqual(device.location_count, 1)
         if server is not None:
             server.stop()
         if client is not None:

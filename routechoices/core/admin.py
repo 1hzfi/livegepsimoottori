@@ -496,6 +496,7 @@ class DeviceBrandFilter(admin.SimpleListFilter):
             ("gt06", "GT06"),
             ("h02", "H02"),
             ("ios", "iOS"),
+            ("jt808", "JT808"),
             ("mictrack", "MicTrack"),
             ("queclink", "Queclink"),
             ("teltonika", "Teltonika"),
@@ -519,6 +520,8 @@ class DeviceBrandFilter(admin.SimpleListFilter):
             return queryset.filter(user_agent="GT06")
         if self.value() == "h02":
             return queryset.filter(user_agent="H02")
+        if self.value() == "jt808":
+            return queryset.filter(user_agent="JT808")
         if self.value() == "ios":
             return queryset.filter(user_agent__startswith="Routechoices-ios-tracker/")
         if self.value() == "mictrack":

@@ -6,7 +6,7 @@ After=network-online.target
 [Service]
 Type=Simple
 Environment=TCP_SERVER_INSTANCE=%i
-ExecStart=/apps/routechoices-server/env/bin/python /apps/routechoices-server/manage.py run_tcp_server --tmt250-port=12000 --mictrack-port=12001 --queclink-port=12002 --tracktape-port=12003 --xexun-port=12004 --gt06-port=12005 --xexun2-port=12006 --h02-port=12007
+ExecStart=/apps/routechoices-server/env/bin/python /apps/routechoices-server/manage.py run_tcp_server --tmt250-port=12000 --mictrack-port=12001 --queclink-port=12002 --tracktape-port=12003 --xexun-port=12004 --gt06-port=12005 --xexun2-port=12006 --h02-port=12007 --jt808-port=12008
 Restart=always
 Environment="PATH=/apps/routechoices-server/env/bin/"
 WorkingDirectory=/apps/routechoices-server/

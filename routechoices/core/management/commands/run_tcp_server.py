@@ -14,6 +14,7 @@ SUPPORTED_PORT = (
     ("codec8", "Codec8 (Teltonilka)", (5027, 2000)),
     ("gt06", "GT06", (5023, 2005)),
     ("h02", "H02", (5013)),
+    ("jt808", "JT808", (5015)),
     ("mictrack", "MicTrack", (5191, 2001)),
     ("queclink", "Queclink", (5004, 2002)),
     ("xexun", "Xexun", (5006, 2004)),
