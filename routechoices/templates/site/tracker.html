@@ -336,7 +336,7 @@
                                                 </li>
                                             </ul>
                                         </p>
-                                        <p><small class="text-muted">* H02 and JT808 protocol specificity &mdash; If your tracker transmit a 10 or 12 digits number instead of an IMEI, <a href="mailto:info@routechoices.com?subject=IMEI">Contact us</a> to get a Tracker ID.</small></p>
+                                        <p class="text-muted"><small>* For H02 and JT808 trackers that use a numeric ID instead of an IMEI, pad the ID with zeroes to 14 digits, then append its Luhn check digit to make a 15-digit IMEI. H02 IDs are 10 digits; JT808 IDs are 12 digits. For example, H02 ID <code>7026318355</code> becomes <code>70263183550000</code>, then <code>702631835500003</code> after adding the check digit. Enter that final value in the IMEI form to get your RouteChoices Tracker ID.</small></p>
                                         <p>The recommended data push interval is 5 seconds, and the recommended GPS data acquisition interval is 1 second, but feel free to adjust the settings depending on your usage as this settings affect the battery life.</p>
                                         <p><a target="_blank" href="https://github.com/routechoiceslivegps/trackers-config" aria-label="Config file download page">Repository of configuration files</a> for most common trackers.</p>
                                     </div>
