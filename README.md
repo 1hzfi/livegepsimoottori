@@ -12,7 +12,7 @@ It delivers:
   - A web app for viewing events.
   - A dashboard for users to manage their clubs, events, maps, GPS tracking devices.
   - A documented REST API.
-  - A TCP servers for listening to dedicated GPS trackers.
+  - Multiple TCP servers listening to different GPS tracker protocols.
   - A WMS and a WMTS server for user uploaded maps and for proxying background map layers.
   - Multiple other map/gps related web tools.
   - An admin interface for the staff.
