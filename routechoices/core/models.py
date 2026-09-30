@@ -1497,6 +1497,7 @@ MAP_GOOGLE_TERRAIN = "gmap-terrain"
 MAP_MAPANT_CH = "mapant-ch"
 MAP_MAPANT_EE = "mapant-ee"
 MAP_MAPANT_FI = "mapant-fi"
+MAP_MAPANT_FR = "mapant-fr"
 MAP_MAPANT_NO = "mapant-no"
 MAP_MAPANT_ES = "mapant-es"
 MAP_MAPANT_SV = "mapant-se"
@@ -1515,6 +1516,7 @@ MAP_CHOICES = (
     (MAP_GOOGLE_TERRAIN, "Google Map Terrain"),
     (MAP_MAPANT_EE, "Mapant Estonia"),
     (MAP_MAPANT_FI, "Mapant Finland"),
+    (MAP_MAPANT_FR, "Mapant France"),
     (MAP_MAPANT_NO, "Mapant Norway"),
     (MAP_MAPANT_ES, "Mapant Spain"),
     (MAP_MAPANT_SV, "Mapant Sweden"),

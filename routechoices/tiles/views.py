@@ -10,6 +10,7 @@ from routechoices.lib.tile_proxies import (
     leisure_uk_proxy,
     mapant_ch_proxy,
     mapant_ee_proxy,
+    mapant_fr_proxy,
     mapant_se_proxy,
 )
 
@@ -150,6 +151,8 @@ def serve_tile_proxy(request, country, z, x, y):
         proxy = mapant_ch_proxy
     elif country == "ee":
         proxy = mapant_ee_proxy
+    elif country == "fr":
+        proxy = mapant_fr_proxy
     elif country == "se":
         proxy = mapant_se_proxy
     elif country == "uk":

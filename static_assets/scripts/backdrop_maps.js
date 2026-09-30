@@ -75,6 +75,13 @@ const backdropMaps = {
 			className: "wms256",
 		},
 	),
+	"mapant-fr": L.tileLayer(
+		"https://tiles.routechoices.dev/proxy/fr/{z}/{x}/{y}.webp",
+		{
+			attribution: "Map data &copy; MapAnt.fr",
+			className: "wms256",
+		},
+	),
 	"mapant-se": L.tileLayer(
 		"https://tiles.routechoices.com/proxy/se/{z}/{x}/{y}.webp",
 		{
@@ -191,6 +198,7 @@ const backgroundMapTitles = {
 	"gmap-terrain": "Google Map Terrain",
 	"mapant-ee": "Mapant Estonia",
 	"mapant-fi": "Mapant Finland",
+	"mapant-fr": "Mapant France",
 	"mapant-no": "Mapant Norway",
 	"mapant-es": "Mapant Spain",
 	"mapant-se": "Mapant Sweden",

@@ -245,16 +245,20 @@ class CustomCrsWmts2WebMercatorWmtsProxy:
                 tile = (z - self.z_offset, yy, xx)
                 tiles.append(tile)
 
-        im = Image.new(mode="RGB", size=(img_width, img_height), color=(255, 255, 255))
         if len(tiles) > 9:
             buffer = BytesIO()
-            im.save(
+            Image.new(
+                mode="RGB",
+                size=(dst_tile_size, dst_tile_size),
+                color=(255, 255, 255),
+            ).save(
                 buffer,
                 "WEBP",
                 optimize=True,
-                quality=40,
+                quality=10,
             )
             return buffer
+        im = Image.new(mode="RGB", size=(img_width, img_height), color=(255, 255, 255))
         for tile in tiles:
             z, yy, xx = tile
             tile_img = self.get_crs_tile(z, yy, xx)
@@ -300,6 +304,16 @@ mapant_ch_proxy = CustomCrsWmts2WebMercatorWmtsProxy(
 mapant_ee_proxy = CustomCrsWms2WebMercatorWmtsProxy(
     "+proj=lcc +lat_0=57.5175539305556 +lon_0=24 +lat_1=59.3333333333333 +lat_2=58 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs",
     "https://mapantee.gokartor.se/ogc/wms.php?v=1&request=GetMap&width=512&height=512&bbox={min_x},{min_y},{max_x},{max_y}",
+)
+
+mapant_fr_proxy = CustomCrsWmts2WebMercatorWmtsProxy(
+    "+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs",
+    256,
+    8000,
+    -342999.0761650753,
+    7668002.922754722,
+    5,
+    "https://mapant.fr/api/tiles/{z}/{x}/{y}.webp",
 )
 
 mapant_se_proxy = CustomCrsWmts2WebMercatorWmtsProxy(
