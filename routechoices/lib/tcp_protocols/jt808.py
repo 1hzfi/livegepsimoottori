@@ -336,8 +336,8 @@ class JT808Connection(GenericConnection):
             data = bytearray(b"\x00" * 2048)
             try:
                 bytes_read = await self.stream.read_into(data, partial=True)
-            except Exception:
-                print(f"{self.protocol_name} - Could not read stream")
+            except Exception as e:
+                print(f"{self.protocol_name} - Could not read stream ({e})")
                 self.stream.close()
                 return
 
