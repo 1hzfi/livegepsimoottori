@@ -20,3 +20,5 @@ It contains code that deliver:
 This project heavily relies on the Django, and on the Tornado Web, Python frameworks.
 
 See it in action at https://www.routechoices.com
+
+Use discount code GITHUB10 at checkout for 10% off the yearly subscription!
