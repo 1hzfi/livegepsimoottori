@@ -136,7 +136,7 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
             79,
         ]
         server = client = None
-        device = await create_imei_device("051160004464004")
+        device = await create_imei_device("511600044640000")
         sock, port = bind_unused_port()
         server = JT808Server()
         server.add_socket(sock)

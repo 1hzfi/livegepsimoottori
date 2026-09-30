@@ -69,7 +69,7 @@ class GenericConnection:
         validate_imei(imei)
         self.db_device = await get_device_by_imei(imei)
         if not self.db_device:
-            raise Exception("Imei not registered")
+            raise Exception(f"Imei {imei} not registered")
         if not self.db_device.user_agent:
             self.db_device.user_agent = self.protocol_name
         self.imei = imei

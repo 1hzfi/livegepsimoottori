@@ -327,6 +327,7 @@ class JT808Connection(GenericConnection):
             imei = unpack(">H", dev_id[0:2])[0] << 32 + unpack(">I", dev_id[2:6])[0]
             imei = luhn.append(f"{imei:0>14}")
             return imei
+        serial = serial.lstrip("0")
         return luhn.append(f"{serial:0<14}")
 
     async def start_listening(self):
