@@ -76,7 +76,7 @@ const backdropMaps = {
 		},
 	),
 	"mapant-fr": L.tileLayer(
-		"https://tiles.routechoices.dev/proxy/fr/{z}/{x}/{y}.webp",
+		"https://tiles.routechoices.com/proxy/fr/{z}/{x}/{y}.webp",
 		{
 			attribution: "Map data &copy; MapAnt.fr",
 			className: "wms256",
