@@ -2305,21 +2305,6 @@ function RCEvent(infoURL, clockURL, locale) {
 				map.contextmenu.removeItem(resetMassStartContextMenuItem);
 				resetMassStartContextMenuItem = null;
 			}
-			if (rasterMapLayer?.data?.max_zoom) {
-				map.setZoom(Math.min(17, rasterMapLayer?.data?.max_zoom), {
-					animate: false,
-				});
-			}
-			const bound = new L.LatLngBounds();
-			for (const route of Object.values(competitorRoutes)) {
-				const pos = route?.getByTime(currentTime);
-				if (pos) {
-					bound.extend([pos[1], pos[2]]);
-				}
-			}
-			if (bound.isValid()) {
-				map.setView(bound.getCenter(), map.getZoom(), { animate: false });
-			}
 		}
 		u("#synced-starts-check").nodes[0].checked = true;
 
