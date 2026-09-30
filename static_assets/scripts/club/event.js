@@ -794,12 +794,18 @@ function RCEvent(infoURL, clockURL, locale) {
 		const w = (bLon[0] + bLon[1]) / 2;
 		const e = (bLon[2] + bLon[3]) / 2;
 
-		const newBounds = [
-			[n, e],
-			[n, w],
-			[s, w],
-			[s, e],
+		const verBounds = [
+			[n, (e + w) / 2],
+			[s, (e + w) / 2],
 		];
+		const horBounds = [
+			[(n + s) / 2, e],
+			[(n + s) / 2, w],
+		];
+		const verZoom = map.getBoundsZoom(verBounds);
+		const horZoom = map.getBoundsZoom(horBounds);
+		const newBounds =
+			verZoom > horZoom ? L.latLngBounds(verBounds) : L.latLngBounds(horBounds);
 		map.fitBounds(newBounds, { animate: false });
 	}
 
