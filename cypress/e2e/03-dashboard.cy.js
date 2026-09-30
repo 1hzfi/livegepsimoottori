@@ -329,7 +329,7 @@ context("Dashboard actions", () => {
 			cy.get(".leaflet-control-grouping").first().contains("Group A");
 			cy.contains("#map", "Group A");
 			cy.contains("#map", "🇫🇮 KooVee").should("not.exist");
-			cy.contains("#map", "🇫🇮 Paimion Rasti").should("not.exist");
+			cy.contains("#map", "🇫🇮 Paimion Rasti").should("exist");
 			cy.get("#toggleClusterSwitch").click();
 
 			//// mass start simulation
