@@ -171,7 +171,11 @@ class CustomCrsWmts2WebMercatorWmtsProxy:
         except Exception as e:
             print(e, flush=True)
             return None
-        im = Image.open(BytesIO(res.content))
+        try:
+            im = Image.open(BytesIO(res.content))
+        except Exception as e:
+            print(e, flush=True)
+            return None
 
         cache.set(cache_key, im, timeout=REMOTE_IMG_CACHE_TIMEOUT)
         return im
