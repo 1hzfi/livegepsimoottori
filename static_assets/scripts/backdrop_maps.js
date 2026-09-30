@@ -80,6 +80,7 @@ const backdropMaps = {
 		{
 			attribution: "Map data &copy; MapAnt.fr",
 			className: "wms256",
+			maxNativeZoom: 17,
 		},
 	),
 	"mapant-se": L.tileLayer(
