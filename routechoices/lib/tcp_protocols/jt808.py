@@ -75,7 +75,7 @@ class JT808Connection(GenericConnection):
         has_protocol_version = attribute & 0x4000
         self.protocol_version = buf.read(1)[0] if has_protocol_version else None
         dev_id = read_slice(
-            buf, 10 if has_protocol_version else 7 if self.delimiter == 0xE7 else 6
+            buf, 10 if has_protocol_version else (7 if self.delimiter == 0xE7 else 6)
         )
 
         if data_type in (0x5501, 0x5502):
@@ -288,7 +288,7 @@ class JT808Connection(GenericConnection):
         if short_index:
             buf.write(b"\x01")
         else:
-            buf.write(b"\x00")
+            buf.write(b"\x00\x00")
         buf.write(data)
         buf.write(pack("B", reduce(operator.xor, buf.getvalue()[1:])))
         buf.write(self.delimiter)

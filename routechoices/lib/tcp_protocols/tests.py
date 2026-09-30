@@ -145,6 +145,7 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
         for i, (d, b) in enumerate(zip(gps_data, batt)):
             await client.write(bytes.fromhex(d))
             await asyncio.sleep(0.05)
+            # print((await client.read_bytes(255, partial=True)).hex())
             device = await refresh_device(device)
             self.assertEqual(device.location_count, sum(nb_data[: i + 1]))
             self.assertEqual(device.battery_level, b)
