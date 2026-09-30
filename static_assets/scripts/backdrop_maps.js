@@ -83,11 +83,12 @@ const backdropMaps = {
 		},
 	),
 	"topo-fr": L.tileLayer(
-		"https://data.geopf.fr/wmts?layer=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&tilematrix={z}&tilecol={x}&tilerow={y}",
+		"https://data.geopf.fr/private/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN25TOUR&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image%2Fjpeg&TILEMATRIX={z}&TILECOL={x}&TILEROW={y}&APIKEY=ign_scan_ws",
 		{
 			attribution:
 				'Map data <a href="https://www.ign.fr/" target="_blank">&copy; IGN France</a>',
 			className: "wms256",
+			maxNativeZoom: 16,
 		},
 	),
 	"mapant-es": L.tileLayer.wms("https://mapant.es/wms", {
