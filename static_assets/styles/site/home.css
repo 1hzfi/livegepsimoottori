@@ -208,25 +208,27 @@
 }
 
 .marquee-container {
-	width: auto;
-	overflow-x: visible;
+	width: 100%;
 	padding: 15px 0;
 }
 
 @keyframes marquee {
 	0% {
-		transform: translateX(100%);
+		transform: translateX(0);
 	}
 
 	100% {
-		transform: translateX(-100%);
+		transform: translateX(-50%);
 	}
 }
 
 .marquee-content {
-	width: auto;
-	display: inline-flex !important;
+	width: max-content;
 	animation: marquee 20s linear infinite;
+}
+
+.marquee-group {
+	flex: 0 0 auto;
 }
 
 .marquee-item {

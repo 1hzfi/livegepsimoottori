@@ -182,23 +182,28 @@
                 </div>
                 <div class="marquee-container overflow-hidden">
                     <div class="marquee-content d-flex align-items-center">
-                    {% for club in club_featured %}
-                        <div class="marquee-item text-white">
-                            <div class="col align-self-start text-center mb-4 mx-3 flex-basis-200px">
-                                <a href="{{ club.nice_url }}"
-                                target="_blank"
-                                class="d-inline-block text-decoration-none dark-link rounded">
-                                    <div class="rounded mx-auto d-block mb-2 logo-trustees" style="width: 120px">
-                                        <img src="{% if club.logo %}{{ club.logo_url_www }}{% else %}{% static 'img/club-default.png' %}{% endif %}"
-                                            width="100"
-                                            height="100"
-                                            alt="{{ club.name }}'s logo" />
+                        {% for copy in "12" %}
+                            <div class="marquee-group d-flex align-items-center"{% if forloop.last %} aria-hidden="true"{% endif %}>
+                                {% for club in club_featured %}
+                                    <div class="marquee-item text-white">
+                                        <div class="col align-self-start text-center mb-4 mx-3 flex-basis-200px">
+                                            <a href="{{ club.nice_url }}"
+                                                target="_blank"
+                                                {% if forloop.parentloop.last %}tabindex="-1"{% endif %}
+                                                class="d-inline-block text-decoration-none dark-link rounded">
+                                                <div class="rounded mx-auto d-block mb-2 logo-trustees" style="width: 120px">
+                                                    <img src="{% if club.logo %}{{ club.logo_url_www }}{% else %}{% static 'img/club-default.png' %}{% endif %}"
+                                                        width="100"
+                                                        height="100"
+                                                        alt="{{ club.name }}'s logo" />
+                                                </div>
+                                                <span class="fw-bold" style="color: var(--bs-body-bg);white-space: no-wrap;">{{ club.name }}</span>
+                                            </a>
+                                        </div>
                                     </div>
-                                    <span class="fw-bold" style="color: var(--bs-body-bg);white-space: no-wrap;">{{ club.name }}</span>
-                                </a>
+                                {% endfor %}
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
                     </div>
                 </div>
                 <div class="mb-5 text-center">
