@@ -324,7 +324,7 @@ class JT808Connection(GenericConnection):
     def decode_id(self, dev_id):
         serial = dev_id.hex()
         if re.search(r"[^0-9]", serial):
-            imei = unpack(">H", dev_id[0:2])[0] << 32 + unpack(">I", dev_id[2:6])[0]
+            imei = (unpack(">H", dev_id[0:2])[0] << 32) + unpack(">I", dev_id[2:6])[0]
             imei = luhn.append(f"{imei:0>14}")
             return imei
         serial = serial.lstrip("0")
