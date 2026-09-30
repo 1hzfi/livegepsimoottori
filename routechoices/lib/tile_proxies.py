@@ -312,7 +312,7 @@ mapant_fr_proxy = CustomCrsWmts2WebMercatorWmtsProxy(
     8000,
     -342999.0761650753,
     7668002.922754722,
-    5,
+    4,
     "https://mapant.fr/api/tiles/{z}/{x}/{y}.webp",
 )
 
