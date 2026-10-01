@@ -116,7 +116,7 @@ class Migration(migrations.Migration):
             name="send_interval",
             field=models.PositiveIntegerField(
                 default=5,
-                help_text="If using live GPS trackers, enter here the upload interval setting of your devices, when using one of the official app, leave the value at 5 seconds",
+                help_text="If using GPS trackers, enter here the upload interval setting of your devices, when using one of the official app, leave the value at 5 seconds",
                 validators=[django.core.validators.MinValueValidator(1)],
                 verbose_name="Live upload interval (seconds)",
             ),

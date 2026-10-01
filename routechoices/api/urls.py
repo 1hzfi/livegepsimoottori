@@ -10,9 +10,9 @@ from routechoices.api import views
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Routechoices - Live GPS Tracking - API",
+        title="Routechoices.com - GPS Tracking - API",
         default_version="v1",
-        description="Routechoices - Live GPS Tracking - API",
+        description="Routechoices.com - GPS Tracking - API",
         terms_of_service="https://www.routechoices.com/tos/",
         contact=openapi.Contact(email="info@routechoices.com"),
         license=openapi.License(

@@ -1,14 +1,14 @@
-# Routechoices - Live GPS Tracking
+# Routechoices.com - GPS Tracking
 
-Routechoices is a live GPS tracking SaaS platform for orienteering and outdoor enthusiasts.
+Routechoices.com is a GPS tracking SaaS platform for orienteering and outdoor enthusiasts.
 
 ## Revolutionize Your Events
 
-Set up your club effortlessly and start live GPS tracking your training sessions or competitions immediatly.
+Set up your club effortlessly and start GPS tracking your training sessions or competitions immediatly.
 
 Our solution enables coaches, friends, and spectators, to follow in real time from any device with a web browser participants far away carrying dedicated GPS trackers or smartphones with our app.
 
-The Routechoices live GPS tracking platform offers a multitude of benefits: rapid analysis for the coaching staff, enhanced entertainment for the public, and increased safety for the runners.
+The Routechoices.com GPS tracking platform offers a multitude of benefits: rapid analysis for the coaching staff, enhanced entertainment for the public, and increased safety for the runners.
 
 After the event, replay the action as many times as you want and take advantage of the advanced features built in our interactive player.
 
@@ -24,11 +24,11 @@ Our modern software stack set us apart from the competition, it incorporates man
 
 ## Track Your Events with Customizable and High-Quality Maps
 
-Discover the ultimate flexibility in how you can experience live GPS tracking with our platform. You can choose the perfect map to suit your needs.
+Discover the ultimate flexibility in how you can experience GPS tracking with our platform. You can choose the perfect map to suit your needs.
 
 Use your own copies of your maps for a fully personalized experience. Upload your own files and use them as background for your live page... Or take advantage of our extensive selection of high-precision background maps. Access options like: "MapAnt" for Norway, Sweden, Finland, Estonia, Switzerland and Spain, High precision topographical maps for Norway (Kartverket), Finland (MML Peruskartta), France (IGN) and the UK (Ordnance Survey Leisure), As well as world wide layers such as OSM, OpenTopo, ArcGIS and Google Maps.
 
-Our platform puts you in control, letting you combine cutting-edge live GPS tracking with maps tailored to your activities.
+Our platform puts you in control, letting you combine cutting-edge GPS tracking with maps tailored to your activities.
 
 ## Extensive API for Developers
 

@@ -6,7 +6,7 @@
           href="{% static 'styles/site/tracker.css' %}?v=2022022600" />
 {% endblock extra_head %}
 
-{% block head_title %}Trackers | Routechoices | Live GPS Tracking{% endblock %}
+{% block head_title %}Trackers | Routechoices | GPS Tracking{% endblock %}
 
 {% block contentup %}
     <div class="container-fluid p-0">
@@ -274,7 +274,7 @@
                                     <div class="mb-3">
                                         <h5>Get a Tracker ID:</h5>
                                         <p>The trackers must be identify with us before being able to use on our platform.</p>
-                                        <p>Get a unique 8 digits <i><b>RouteChoices</b></i> identifier for your tracker by entering its IMEI number in the form below.</p>
+                                        <p>Get a unique 8 digits platform identifier for your tracker by entering its IMEI number in the form below.</p>
                                         <form id="imeiForm">
                                             <div class="form-group">
                                                 <label for="IMEI" class="fw-bold">Tracker's IMEI</label>
@@ -336,7 +336,7 @@
                                                 </li>
                                             </ul>
                                         </p>
-                                        <p class="text-muted"><small>* For H02 and JT808 trackers that use a numeric ID instead of an IMEI, pad the ID with zeroes to 14 digits, then append its Luhn check digit to make a 15-digit IMEI. H02 IDs are 10 digits; JT808 IDs are 12 digits. For example, H02 ID <code>7026318355</code> becomes <code>70263183550000</code>, then <code>702631835500003</code> after adding the check digit. Enter that final value in the IMEI form to get your RouteChoices Tracker ID.</small></p>
+                                        <p class="text-muted"><small>* For H02 and JT808 trackers that use a numeric ID instead of an IMEI, pad the ID with zeroes to 14 digits, then append its Luhn check digit to make a 15-digit IMEI. H02 IDs are 10 digits; JT808 IDs are 12 digits. For example, H02 ID <code>7026318355</code> becomes <code>70263183550000</code>, then <code>702631835500003</code> after adding the check digit. Enter that final value in the IMEI form to get your Tracker ID.</small></p>
                                         <p>The recommended data push interval is 5 seconds, and the recommended GPS data acquisition interval is 1 second, but feel free to adjust the settings depending on your usage as this settings affect the battery life.</p>
                                         <p><a target="_blank" href="https://github.com/routechoiceslivegps/trackers-config" aria-label="Config file download page">Repository of configuration files</a> for most common trackers.</p>
                                     </div>

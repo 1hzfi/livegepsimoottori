@@ -356,7 +356,7 @@ class Club(models.Model):
     admins = models.ManyToManyField(User)
     description = models.TextField(
         blank=True,
-        default="""## Live GPS Tracking
+        default="""## GPS Tracking
 
 Follow our events live or replay them later.
 
@@ -1808,9 +1808,9 @@ class Event(models.Model, SomewhereOnEarth):
         "Live upload interval (seconds)",
         default=5,
         help_text=(
-            "If using live GPS trackers, enter here the upload "
+            "If using GPS trackers, enter here the upload "
             "interval setting of your devices, when using one of the "
-            "official app, leave the value at 5 seconds"
+            "official tracker app, leave the value at 5 seconds"
         ),
         validators=[MinValueValidator(1)],
     )
@@ -2380,7 +2380,7 @@ class Event(models.Model, SomewhereOnEarth):
                 10,
                 url_template=settings.THUMBNAIL_URL_TEMPLATE,
                 headers={
-                    "User-Agent": f"Routechoices Live GPS Server {git_master_hash()} (https://www.routechoices.com; contact@routechoices.com)",
+                    "User-Agent": f"Routechoices.com - v{git_master_hash()} (contact@routechoices.com)",
                     "X-Requested-With": "StaticMap",
                 },
             )

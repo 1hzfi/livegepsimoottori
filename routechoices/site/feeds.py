@@ -39,7 +39,7 @@ class LiveEventsFeed(Feed):
         return item.name
 
     def item_description(self, item):
-        return f"Live GPS Tracking for {item.name} by {item.club}"
+        return f"GPS Tracking for {item.name} by {item.club}"
 
     def item_pubdate(self, item):
         return item.start_date

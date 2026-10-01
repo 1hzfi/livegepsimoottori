@@ -79,7 +79,7 @@ logoWatermark.onAdd = () => {
 	<div class="d-inline-block px-2" style="vertical-align: bottom;color: #000">
 		<div style="line-height:1em"><small>Powered By</small></div>
 		<div style="text-align:left;font-size:1em;line-height:1em;color: #000">ROUTECHOICES</div>
-		<div style="font-size:1em;line-height:1em">LIVE GPS TRACKING</div>
+		<div style="font-size:1em;line-height:1em">GPS TRACKING</div>
 	</div>
 </a>`;
 	return div;

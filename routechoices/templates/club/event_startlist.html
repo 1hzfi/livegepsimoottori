@@ -1,7 +1,7 @@
 {% extends "club/base.html" %}
 {% load compress django_bootstrap5 hosts static %}
 
-{% block head_title %}{{ event.name }} start list | Powered by Routechoices | Live GPS Tracking{% endblock %}
+{% block head_title %}{{ event.name }} start list | Powered by Routechoices | GPS Tracking{% endblock %}
 
 {% block head_description %}{{ event.name }} by {{ event.club.name }} start list{% endblock %}
 
@@ -9,7 +9,7 @@
     <meta property="og:title" content="{{ event.name }} start list" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:site_name" content="Routechoices | Live GPS Tracking" />
+    <meta property="og:site_name" content="Routechoices | GPS Tracking" />
     <meta property="og:description"
           content="{{ event.name }} by {{ event.club.name }} start list page" />
     <meta property="og:url" content="{{ event.get_absolute_url }}/startlist" />

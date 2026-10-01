@@ -3,7 +3,7 @@
 Live Gepsi Moottori
 ===================
 
-Django Framework based engine for running a Live GPS platform
+Django Framework based engine for running a GPS tracking platform
 
 It contains code that deliver:
   - A web front-end for the SaaS platform: landing, pricing, help, TOS…

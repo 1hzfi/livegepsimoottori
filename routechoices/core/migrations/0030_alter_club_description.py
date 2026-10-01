@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             field=models.TextField(
                 blank=True,
                 default=(
-                    "## Live GPS Tracking\n\n"
+                    "## GPS Tracking\n\n"
                     "Follow our events live or replay them later.\n\n"
                     "*This website is powered by Routechoices.com*"
                 ),
