@@ -1,3 +1,20 @@
+function toISOStringWithTimezone(date) {
+	const tzOffset = -date.getTimezoneOffset();
+	const diff = tzOffset >= 0 ? "+" : "-";
+
+	const pad = (num) => String(Math.floor(Math.abs(num))).padStart(2, "0");
+
+	// Shift the date by the offset to get local time components via toISOString
+	const localISOTime = new Date(date.getTime() + tzOffset * 60 * 1000)
+		.toISOString()
+		.slice(0, -1); // Remove the trailing 'Z'
+
+	const hours = pad(tzOffset / 60);
+	const minutes = pad(tzOffset % 60);
+
+	return `${localISOTime}${diff}${hours}:${minutes}`;
+}
+
 context("Dashboard actions", () => {
 	after(() => {
 		cy.wait(100);
@@ -88,12 +105,10 @@ context("Dashboard actions", () => {
 		cy.contains("GPSSeuranta.net Proxy").click();
 		const tomorrow = new Date();
 		tomorrow.setDate(tomorrow.getDate() + 1);
-		cy.contains(`(Until ${tomorrow.toISOString().slice(0, 10)} `);
+		const untilDate = toISOStringWithTimezone(tomorrow).slice(0, 10);
+		cy.contains(`(Until ${untilDate} `);
 		cy.contains("GPSSeuranta.net Proxy").click();
-		cy.get("body").should(
-			"not.contain",
-			`(Until ${tomorrow.toISOString().slice(0, 10)} `,
-		);
+		cy.get("body").should("not.contain", `(Until ${untilDate} `);
 
 		cy.contains("Delete").first().click();
 		cy.contains("Delete tracker Dev1?");
