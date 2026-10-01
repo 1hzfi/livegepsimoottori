@@ -234,46 +234,42 @@
                     <span><i class="fa-solid fa-clock-rotate-left"></i> Recaps</span>
                 </h2>
                 {% if home_url and not event_set_page %}
-                <form class="d-flex gap-2" role="search">
-                    <input class="form-control" type="search" placeholder="Search..." aria-label="Search" name="q" value="{{ search_text }}">
-                    <button class="btn btn-primary text-nowrap" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
-                </form>
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <form class="d-flex gap-2" role="search">
+                        <input class="form-control" type="search" placeholder="..." aria-label="Search" name="q" value="{{ search_text }}">
+                        <button class="btn btn-primary text-nowrap" type="submit">Search <i class="fa-solid fa-magnifying-glass"></i></button>
+                    </form>
+                </div>
                 {% if search_text %}
-                <span>Results for search: "<i>{{ search_text }}</i>"</span>
+                <div class="mb-3">
+                    <span class="text-muted">Results for search: "<i>{{ search_text }}</i>"</span>
+                </div>
                 {% endif %}
                 {% if years %}
-                <div class="row" style="text-wrap: balance">
-                    <p class="mb-1">
-                        {% if year %}
-                        <a class="me-1" href="{{ home_url }}{% if search_text %}?q={{ search_text|urlencode }}{% endif %}">All</a>
-                        {% else %}
-                        <span class="me-1">All</span>
-                        {% endif %}
-                        {% for y in years %}
-                        {% if year == y %}
-                        <span class="me-1">{{ y }}</span>
-                        {% else %}
-                        <a class="me-1" href="{{ home_url }}?{% if search_text %}q={{ search_text|urlencode }}&{% endif %}year={{ y }}">{{ y }}</a>
-                        {% endif %}
-                        {% endfor %}
-                    </p>
-                </div>
-                {% if year %}
-                <div class="row" style="text-wrap: balance">
-                    <p class="mb-1">
-                        {% if month %}
-                        <a class="me-1" href="{{ home_url }}?{% if search_text %}q={{ search_text|urlencode }}&{% endif %}year={{ year }}">All</a>
-                        {% else %}
-                        <span class="me-1">All</span>
-                        {% endif %}
-                        {% for m in months %}
-                        {% if month == m %}
-                        <span class="me-1">{{ month_names|index:m }}</span>
-                        {% else %}
-                        <a class="me-1" href="{{ home_url }}?{% if search_text %}q={{ search_text|urlencode }}&{% endif %}year={{ year }}&month={{ m }}">{{ month_names|index:m }}</a>
-                        {% endif %}
-                        {% endfor %}
-                    </p>
+                <div class="mb-3">
+                    <div class="row" style="text-wrap: balance">
+                        <p class="mb-1">
+                            {% for y in years %}
+                            {% if year == y %}
+                            <span class="me-1">{{ y }}</span>
+                            {% else %}
+                            <a class="me-1" href="{{ home_url }}?{% if search_text %}q={{ search_text|urlencode }}&{% endif %}year={{ y }}">{{ y }}</a>
+                            {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+                    {% if year %}
+                    <div class="row" style="text-wrap: balance">
+                        <p class="mb-1">
+                            {% for m in months %}
+                            {% if month == m %}
+                            <span class="me-1">{{ month_names|index:m }}</span>
+                            {% else %}
+                            <a class="me-1" href="{{ home_url }}?{% if search_text %}q={{ search_text|urlencode }}&{% endif %}year={{ year }}&month={{ m }}">{{ month_names|index:m }}</a>
+                            {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
                 </div>
                 {% endif %}
                 {% endif %}
@@ -355,8 +351,13 @@
             </h2>
         </div>
     </div>
+    {% elif not events and search_text %}
+    <div class="card border-0 shadow mb-3" style="background:linear-gradient(to right, var(--rc-color-from-trans), var(--rc-color-to-trans));background-size: cover;background-position: center">
+        <div class="card-body">
+            <h2 style="color: #888">No results...</h2>
+        </div>
+    </div>
     {% endif %}
-</div>
 </div>
 {% endblock contentup %}
 

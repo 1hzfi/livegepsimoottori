@@ -2105,7 +2105,8 @@ class Event(models.Model, SomewhereOnEarth):
         selected_year = request.GET.get("year")
         selected_month = request.GET.get("month")
         search_text_raw = request.GET.get("q", "").strip()
-
+        years = []
+        months = []
         event_qs = cls.objects.filter(privacy=PRIVACY_PUBLIC)
 
         if club is None:
@@ -2132,21 +2133,24 @@ class Event(models.Model, SomewhereOnEarth):
                     | Q(**{key_set_name: search_term})
                 )
             closed_events_qs = closed_events_qs.filter(search_text_query)
+        if closed_events_qs.exists():
+            years = list(
+                closed_events_qs.annotate(year=ExtractYear("start_date"))
+                .values_list("year", flat=True)
+                .order_by("-year")
+                .distinct()
+            )
 
-        months = None
-        years = list(
-            closed_events_qs.annotate(year=ExtractYear("start_date"))
-            .values_list("year", flat=True)
-            .order_by("-year")
-            .distinct()
-        )
-        if selected_year:
-            try:
-                selected_year = int(selected_year)
-            except Exception:
-                raise BadRequest("Invalid year")
-        if selected_year:
+            if selected_year:
+                try:
+                    selected_year = int(selected_year)
+                except Exception:
+                    raise BadRequest("Invalid year")
+            elif years:
+                selected_year = years[0]
+
             closed_events_qs = closed_events_qs.filter(start_date__year=selected_year)
+
             months = list(
                 closed_events_qs.annotate(month=ExtractMonth("start_date"))
                 .values_list("month", flat=True)
@@ -2160,10 +2164,10 @@ class Event(models.Model, SomewhereOnEarth):
                         raise ValueError()
                 except Exception:
                     raise BadRequest("Invalid month")
-            if selected_month:
-                closed_events_qs = closed_events_qs.filter(
-                    start_date__month=selected_month
-                )
+            elif months:
+                selected_month = months[0]
+
+            closed_events_qs = closed_events_qs.filter(start_date__month=selected_month)
 
         all_closed_event_sets = list_events_sets(closed_events_qs)
         paginator = Paginator(all_closed_event_sets, 25)
@@ -2178,36 +2182,31 @@ class Event(models.Model, SomewhereOnEarth):
             search_text_query=search_text_query,
         )
 
-        if closed_events_page.number == 1 and not selected_year and not search_text_raw:
-            live_events_qs = event_qs.filter(
-                start_date__lte=now(), end_date__gte=now()
-            ).exclude(visibility=VISIBILITY_REPLAY)
+        live_events_qs = event_qs.filter(
+            start_date__lte=now(), end_date__gte=now()
+        ).exclude(visibility=VISIBILITY_REPLAY)
 
-            upcoming_events_qs = (
-                event_qs.annotate(
-                    visibility_date=Case(
-                        When(visibility=VISIBILITY_REPLAY, then=F("end_date")),
-                        default=F("start_date"),
-                    )
+        upcoming_events_qs = (
+            event_qs.annotate(
+                visibility_date=Case(
+                    When(visibility=VISIBILITY_REPLAY, then=F("end_date")),
+                    default=F("start_date"),
                 )
-                .filter(
-                    visibility_date__gt=now(),
-                    visibility_date__lte=now() + timedelta(hours=24),
-                )
-                .order_by("visibility_date", "name")
             )
+            .filter(
+                visibility_date__gt=now(),
+                visibility_date__lte=now() + timedelta(hours=24),
+            )
+            .order_by("visibility_date", "name")
+        )
 
-            all_live_events = list_events_sets(live_events_qs)
-            live_events = events_to_sets_for_type(
-                all_live_events, type="live", club=club
-            )
+        all_live_events = list_events_sets(live_events_qs)
+        live_events = events_to_sets_for_type(all_live_events, type="live", club=club)
 
-            all_upcoming_events = list_events_sets(upcoming_events_qs, False)
-            upcoming_events = events_to_sets_for_type(
-                all_upcoming_events, type="upcoming", club=club
-            )
-        else:
-            live_events = upcoming_events = cls.objects.none()
+        all_upcoming_events = list_events_sets(upcoming_events_qs, False)
+        upcoming_events = events_to_sets_for_type(
+            all_upcoming_events, type="upcoming", club=club
+        )
 
         return {
             "club": club,
