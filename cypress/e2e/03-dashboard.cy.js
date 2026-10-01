@@ -88,11 +88,11 @@ context("Dashboard actions", () => {
 		cy.contains("GPSSeuranta.net Proxy").click();
 		const tomorrow = new Date();
 		tomorrow.setDate(tomorrow.getDate() + 1);
-		cy.contains("(Until " + tomorrow.toISOString().slice(0, 10) + " ");
+		cy.contains(`(Until ${tomorrow.toISOString().slice(0, 10)} `);
 		cy.contains("GPSSeuranta.net Proxy").click();
 		cy.get("body").should(
 			"not.contain",
-			"(Until " + tomorrow.toISOString().slice(0, 10) + " ",
+			`(Until ${tomorrow.toISOString().slice(0, 10)} `,
 		);
 
 		cy.contains("Delete").first().click();
