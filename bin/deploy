@@ -7,7 +7,7 @@ PID_FILE=${BASEDIR}/var/tasks.pid
 cd $BASEDIR
 echo -e "\e[96mComparing requirements\e[0m"
 PREV_MD5SUM="$(md5sum requirements.txt)"
-curl -s -O -L https://raw.github.com/routechoiceslivegps/livegepsimootori/${1:-live}/requirements.txt
+curl -s -O -L https://raw.github.com/1hzfi/livegepsimoottori/${1:-live}/requirements.txt
 NEW_MD5SUM="$(md5sum requirements.txt)"
 if [ "$NEW_MD5SUM" != "$PREV_MD5SUM" ]
 then
