@@ -1,4 +1,4 @@
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/1hzfi/livegepsimoottori/tree/live.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/1hzfi/livegepsimoottori/tree/live) [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/1hzfi/livegepsimoottori/main.svg)](https://results.pre-commit.ci/latest/github/1hzfi/livegepsimoottori/main) [![codecov](https://codecov.io/gh/1hzfi/livegepsimoottori/branch/live/graph/badge.svg?token=OZLCAY280V)](https://codecov.io/gh/1hzfi/livegepsimoottori)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/1hzfi/livegepsimoottori/tree/live.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/1hzfi/livegepsimoottori/tree/live) [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/1hzfi/livegepsimoottori/live.svg)](https://results.pre-commit.ci/latest/github/1hzfi/livegepsimoottori/live) [![codecov](https://codecov.io/gh/1hzfi/livegepsimoottori/branch/live/graph/badge.svg?token=OZLCAY280V)](https://codecov.io/gh/1hzfi/livegepsimoottori)
 
 Live Gepsi Moottori
 ===================
