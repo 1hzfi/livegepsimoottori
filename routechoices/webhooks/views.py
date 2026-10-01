@@ -140,6 +140,7 @@ def rastilippu_webhook(request):
             ).exclude(external_id=external_id)
             if bundle_matching_names.exists():
                 # We start counting
+                # TODO: improve algorythm for very long names
                 name_original = name
                 name_safe = re.escape(name)
                 pattern = rf"^{name_safe}-(\d+)$"
