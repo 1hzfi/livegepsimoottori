@@ -1471,11 +1471,13 @@ class Map(models.Model, SomewhereOnEarth):
 
 PRIVACY_PUBLIC = "public"
 PRIVACY_SECRET = "secret"
+PRIVACY_PATRON = "commercial"
 PRIVACY_PRIVATE = "private"
 PRIVACY_CHOICES = (
-    (PRIVACY_PUBLIC, "Published"),
-    (PRIVACY_SECRET, "Secret"),
-    (PRIVACY_PRIVATE, "Staff Only"),
+    (PRIVACY_PUBLIC, "Anyone"), # Unauthenticated users see links
+    (PRIVACY_SECRET, "Trustee"), # Unauthenticated users must find out links
+    # (PRIVACY_PAYWALL, "Patron"), # Registrated user who payed some fee at club, event, or course level. Must deal with extra money stuff (LS licence keys)
+    (PRIVACY_PRIVATE, "Staff and Guest"), # extend to authorized guests
 )
 
 
@@ -1483,9 +1485,9 @@ VISIBILITY_LIVE = "live"
 VISIBILITY_PREVIEW = "preview"
 VISIBILITY_REPLAY = "replay"
 VISIBILITY_CHOICES = (
-    (VISIBILITY_LIVE, "From start date"),
-    (VISIBILITY_REPLAY, "After completion"),
-    (VISIBILITY_PREVIEW, "Always available"),
+    (VISIBILITY_PREVIEW, "Always"),
+    (VISIBILITY_LIVE, "Right after the start"),
+    (VISIBILITY_REPLAY, "Once all completed"),
 )
 
 
@@ -1559,7 +1561,7 @@ class EventSet(models.Model):
     name = models.CharField(verbose_name="Name", max_length=255)
     create_page = models.BooleanField(
         default=False,
-        help_text="Creates a page with all the events of the bundle listed",
+        help_text="Creates a page with all the courses of the event listed",
     )
     slug = models.CharField(
         verbose_name="Slug",
@@ -1593,7 +1595,7 @@ class EventSet(models.Model):
                 name="event_set_name_club_uc", fields=("name", "club")
             )
         ]
-        verbose_name = "Bundle"
+        verbose_name = "Course"
 
     def __str__(self):
         return self.name
@@ -1727,7 +1729,7 @@ class Event(models.Model, SomewhereOnEarth):
         max_length=50,
         validators=[validate_nice_slug],
         db_index=True,
-        help_text="This is used to build the url of this event",
+        help_text="This is used to build the url of the course page",
         default=short_random_slug,
     )
     start_date = models.DateTimeField(
@@ -1741,17 +1743,16 @@ class Event(models.Model, SomewhereOnEarth):
         max_length=8,
         choices=PRIVACY_CHOICES,
         default=PRIVACY_PUBLIC,
-        verbose_name="Visibility",
+        verbose_name="Who can access the GPS tracking page",
         help_text=(
-            "Controls how we show the event, if it is published on our pages, or if it is kept secret while accessible to all, or if it is accessible only to its authenticated club staff members."
+            "It can be anyone on visiting our public pages, or you can decide to keep the url secret amongs trustees, or you can make it accessible only to the organizing club staff and selected guests."
         ),
     )
     visibility = models.CharField(
         max_length=8,
-        verbose_name="Availability",
+        verbose_name="When is the GPS tracking accessible?",
         choices=VISIBILITY_CHOICES,
         default=VISIBILITY_LIVE,
-        help_text=("Controls when this event becomes visible to users."),
     )
     featured = models.BooleanField(
         "Featured",
@@ -1823,12 +1824,12 @@ class Event(models.Model, SomewhereOnEarth):
     )
     event_set = models.ForeignKey(
         EventSet,
-        verbose_name="bundle",
+        verbose_name="event",
         null=True,
         blank=True,
         related_name="events",
         on_delete=models.SET_NULL,
-        help_text=("Event within the same bundle are listed together on our pages."),
+        help_text=("Courses within the same event are grouped together on our pages."),
     )
     emergency_contacts = models.TextField(
         default="",
@@ -1850,8 +1851,8 @@ class Event(models.Model, SomewhereOnEarth):
 
     class Meta:
         ordering = ["-start_date", "name"]
-        verbose_name = "event"
-        verbose_name_plural = "events"
+        verbose_name = "course"
+        verbose_name_plural = "courses"
         indexes = [
             models.Index(
                 Upper("slug"),
@@ -1916,7 +1917,7 @@ class Event(models.Model, SomewhereOnEarth):
         super().validate_unique(exclude)
         qs = EventSet.objects.filter(club_id=self.club_id, slug__iexact=self.slug)
         if qs.exists():
-            raise ValidationError("A Bundle with this URL already exists.")
+            raise ValidationError("A event with this URL already exists.")
 
     def can_edit(self, user=None):
         return not self.external_id
@@ -2010,10 +2011,10 @@ class Event(models.Model, SomewhereOnEarth):
                 .select_related("device")
                 .order_by("start_time", "name")
             )
-        # We need this to determine the end time of each of this event's competitors
-        # For each devices used in the event we fetch all the competitors that starts during this event's span
+        # We need this to determine the end time of each of this course's competitors
+        # For each devices used in the course we fetch all the competitors that starts during this course's span
         # We order the device's competitors by their start time
-        # We then pick and for each of this event competitor the other competitor that comes after its own start time
+        # We then pick and for each of this course competitor the other competitor that comes after its own start time
         max_end_date = min(self.end_date, now())
         devices_used = (
             competitor.device_id for competitor in competitors if competitor.device_id
@@ -2457,9 +2458,9 @@ class Event(models.Model, SomewhereOnEarth):
 
     @classmethod
     def get_current_data(cls, event_id, tag, viewer):
-        """Return event data at current time, alond with cache_status"""
+        """Return full course data at current time, alond with cache_status"""
         event = None
-        # check if event is public, if not do the checks
+        # check if course is public, if not do the checks
         is_public_cache_key = f"event:{event_id}:is_public"
         if (is_public := cache.get(is_public_cache_key)) is None:
             event = Event.objects.select_related("club").get(aid=event_id)
@@ -2538,7 +2539,7 @@ class Notice(models.Model):
     text = models.CharField(
         max_length=280,
         blank=True,
-        help_text="Optional text that will be displayed on the event page",
+        help_text="Optional text that will be displayed on the course public page",
     )
 
     def __str__(self):
@@ -3026,13 +3027,12 @@ class Device(models.Model, SomewhereOnEarth):
             if to_emails:
                 msg = EmailMessage(
                     (
-                        f"Routechoices.com - SOS from competitor {competitor.name}"
-                        f" in event {event.name} [{now().isoformat()}]"
+                        f"Routechoices.com - SOS from << {competitor.name} >>"
+                        f" on << {event.name} >> course{ f" of event << { event.event_event.name } >>!" if event.event_set else ""} [{now().isoformat()}]"
                     ),
                     (
-                        f"Competitor {competitor.name} has triggered the SOS button"
-                        f" of his GPS tracker during event {event.name}\r\n\r\n"
-                        "Latest SOS known location is latitude, longitude: "
+                        f"<< {competitor.name} >> has triggered a SOS button\r\n\r\n"
+                        "His latest SOS known location is latitude, longitude: "
                         f"{lat}, {lon}"
                     ),
                     settings.DEFAULT_FROM_EMAIL,
