@@ -14,39 +14,52 @@
 	-webkit-box-decoration-break: clone;
 }
 
-.fa-box-archive {
-	background-color: rgb(77, 77, 77);
-	background-image: linear-gradient(30deg, #afafaf, #808080);
-	background-size: 100%;
-	background-repeat: repeat;
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	-moz-background-clip: text;
-	-moz-text-fill-color: transparent;
-}
-
-.fa-bolt {
-	background-color: rgb(243, 80, 35);
-	background-image: linear-gradient(30deg, #d8962c, #e40000);
-	background-size: 100%;
-	background-repeat: repeat;
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	-moz-background-clip: text;
-	-moz-text-fill-color: transparent;
-}
-
-.fa-bell {
-	background-color: rgb(224, 201, 84);
-	background-image: linear-gradient(30deg, #eef167, #d4880d);
-	background-size: 100%;
-	background-repeat: repeat;
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	-moz-background-clip: text;
-	-moz-text-fill-color: transparent;
-}
-
 .link-primary-alt {
 	color: var(--bs-body-color);
+}
+
+.blink-icon {
+	animation: pulse-animation 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-animation {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.2;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.shining-text {
+	color: #fff;
+	text-shadow:
+		0 0 5px #ff005e,
+		0 0 10px #ff005e,
+		0 0 20px #ff005e,
+		0 0 40px #ff005e,
+		0 0 80px #ff005e;
+	animation: glow 1.5s infinite alternate;
+}
+
+@keyframes glow {
+	0% {
+		text-shadow:
+			0 0 5px #ff005e,
+			0 0 10px #ff005e,
+			0 0 20px #ff005e,
+			0 0 40px #ff005e,
+			0 0 80px #ff005e;
+	}
+	100% {
+		text-shadow:
+			0 0 10px #00d4ff,
+			0 0 20px #00d4ff,
+			0 0 40px #00d4ff,
+			0 0 80px #00d4ff,
+			0 0 160px #00d4ff;
+	}
 }
