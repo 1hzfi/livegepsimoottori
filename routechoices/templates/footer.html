@@ -1,49 +1,49 @@
 {% load compress hosts static %}
 <footer id="myFooter">
-    <div class="container">
+    <div class="container-fluid">
         <div class="row mb-0">
-            <div class="col-sm-3">
-                <h5>Get started</h5>
+            <div class="col-sm-3 col-lg-2">
+                <h5>Get&nbsp;started</h5>
                 <ul>
                     <li>
                         <a href="{% host_url 'site:landing_page' host 'www' %}">Home</a>
                     </li>
                     <li>
-                        <a href="{% host_url 'site:public_events_view' host 'www' %}">Featured Events</a>
+                        <a href="{% host_url 'site:public_events_view' host 'www' %}">Featured&nbsp;Events</a>
                     </li>
                     <li>
-                        <a href="{% host_url 'site:trackers_view' host 'www' %}">Trackers</a>
+                        <a href="{% host_url 'site:trackers_view' host 'www' %}">About&nbsp;Trackers</a>
                     </li>
                     <li>
                         <a href="{% host_url 'site:pricing_view' host 'www' %}">Pricing</a>
                     </li>
                     <li>
-                        <a href="{% host_url 'site:tos_view' host 'www' %}">Terms of Service</a>
+                        <a href="{% host_url 'site:tos_view' host 'www' %}">Terms&nbsp;of&nbsp;Service</a>
                     </li>
                 </ul>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-3 col-lg-2">
                 <h5>Useful links</h5>
                 <ul>
                     <li>
-                        <a href="https://status.routechoices.com">Status <span id="status-indicator" class="status-indicator-default"></span></a>
-                    </li>
-                    <li>
-                        <a href="{% host_url 'api_doc' host 'api' %}">API Documentation</a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/1hzfi/">Source Code</a>
+                        <a href="{% host_url 'api_doc' host 'api' %}">API</a>
                     </li>
                     <li>
                         <a href="https://routechoices.eo.page/newsletter">Newsletter</a>
                     </li>
                     <li>
-                        <a href="{% host_url 'site:privacy_policy_view' host 'www' %}">Privacy Policy</a>
+                        <a href="{% host_url 'site:privacy_policy_view' host 'www' %}">Privacy&nbsp;Policy</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/1hzfi/livegepsimoottori">Source&nbsp;Code</a>
+                    </li>
+                    <li>
+                        <a href="https://status.routechoices.com">Status&nbsp;<span id="status-indicator" class="status-indicator-default"></span></a>
                     </li>
                 </ul>
             </div>
-            <div class="col-sm-3"></div>
-            <div class="col-sm-3 info">
+            <div class="col-sm-3 col-lg-5"></div>
+            <div class="col-sm-3 col-lg-3 info">
                 <h5>Information</h5>
                 <p>Routechoices.com is an easy-to-use yet powerful GPS tracking platform designed for orienteering and outdoor&nbsp;sports enthusiasts. Whether you're on a computer, tablet, or smartphone, you can effortlessly set up and view events where participants' live locations are displayed on high-precision maps.</p>
             </p>
