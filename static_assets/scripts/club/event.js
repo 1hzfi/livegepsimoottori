@@ -1106,7 +1106,7 @@ function RCEvent(infoURL, clockURL, locale) {
 
 					u("#synced-starts-check").on("change", (e) => {
 						e.preventDefault();
-						if (e.target.checked) {
+						if (!e.target.checked) {
 							onPressResetMassStart(false, true);
 						} else {
 							let perc;
@@ -1119,7 +1119,7 @@ function RCEvent(infoURL, clockURL, locale) {
 									(currentTime - getCompetitionStartDate()) /
 									getCompetitorsMaxDuration();
 							}
-							isRealTime = true;
+							isRealTime = false;
 							onMoveProgressBar(perc);
 							computeSplitTimes();
 							if (resetMassStartContextMenuItem) {
@@ -1266,7 +1266,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		u("#live_button").off("click").removeClass("btn-info", "disabled");
 		u("#live_button").parent().addClass("d-none");
 		u("#replay_button").parent().removeClass("d-none");
-		u("#synced-starts-check").nodes[0].checked = false;
+		u("#synced-starts-check").nodes[0].checked = !isRealTime;
 		u(".replay_mode_buttons").hide();
 		u("#replay_control_buttons")
 			.addClass("d-none")
@@ -1609,8 +1609,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		u(".if-live").addClass("d-none");
 		u("#bottom-div").removeClass("d-none");
 		u("#full_progress_bar").parent().removeClass("d-none");
-		u("#synced-starts-check").nodes[0].checked = true;
-		u(".replay_mode_buttons");
+		u("#synced-starts-check").nodes[0].checked = !isRealTime;
 		u("#runners_show_button").removeClass("d-none");
 
 		eventStateControl.setReplay();
@@ -2275,7 +2274,7 @@ function RCEvent(infoURL, clockURL, locale) {
 			isRealTime = false;
 			isCustomStart = true;
 
-			u("#synced-starts-check").nodes[0].checked = true;
+			u("#synced-starts-check").nodes[0].checked = !isRealTime;
 
 			setCustomStart(e.latlng);
 			currentTime = getCompetitorsMinCustomOffset();
@@ -2294,7 +2293,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	}
 
 	function onPressResetMassStart(customStart = false, keepProgress = false) {
-		isRealTime = false;
+		isRealTime = true;
 		isCustomStart = customStart;
 		if (!keepProgress) {
 			prevShownTime = getCompetitionStartDate();
@@ -2312,8 +2311,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				resetMassStartContextMenuItem = null;
 			}
 		}
-		u("#synced-starts-check").nodes[0].checked = true;
-
+		u("#synced-starts-check").nodes[0].checked = !isRealTime;
 		computeSplitTimes();
 	}
 
@@ -3515,7 +3513,6 @@ function RCEvent(infoURL, clockURL, locale) {
 		u("#event-start-list-link").text(banana.i18n("start-list"));
 		u("#loading-text").text(banana.i18n("loading-text"));
 		u("#synced-starts-text").text(banana.i18n("sync-start"));
-		u("#synced-starts-check").nodes[0].checked = true;
 		u("#club-events-link-text").text(
 			banana.i18n("club-events-link-text", window.local.clubName),
 		);
