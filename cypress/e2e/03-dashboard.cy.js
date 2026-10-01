@@ -276,67 +276,6 @@ context("Dashboard actions", () => {
 			cy.contains("The upload of the GPX file was successful!");
 		}
 
-		// Test the event view
-		// TODO: move to own test
-		cy.visit("https://kimito-sk.routechoices.dev/Jukola-2019-1st-leg");
-		cy.origin("https://kimito-sk.routechoices.dev", () => {
-			cy.contains("Niels Christian Hellerud", { timeout: 20_000 }); // in competitor list
-
-			//// toggle competitor
-			cy.get("#toggleAllSwitch").uncheck();
-
-			cy.get(".competitor-switch").eq(2).check();
-			cy.contains("#map", "🇫🇮 KooVee");
-			cy.get(".competitor-switch").eq(2).uncheck();
-			cy.contains("#map", "🇫🇮 KooVee").should("not.exist");
-			cy.get(".competitor-switch").eq(1).check();
-			cy.get('[aria-label="Center"]').eq(1).click();
-			cy.contains("#map", "🇫🇮 Paimion Rasti");
-
-			cy.get("#toggleAllSwitch").check();
-
-			//// change runner color
-			cy.get(".color-tag").eq(1).click();
-			cy.contains("Select new color for Samuel Heinonen");
-			cy.get(".IroWheel").first().should("be.visible").click(50, 50);
-			cy.get("#save-color").click();
-
-			//// center on runner
-			cy.get('[aria-label="Center"]').eq(1).click();
-			cy.wait(200);
-
-			//// move progress bar and focus on runner
-			cy.get("#full_progress_bar").click(50, 7);
-			cy.get(".competitor-focus-btn").eq(1).click();
-			cy.wait(500);
-
-			//// toogle full route
-			cy.get(".competitor-highlight-btn").eq(1).click();
-			cy.get(".competitor-full-route-btn").eq(1).click();
-			cy.wait(500);
-			cy.get(".competitor-highlight-btn").eq(1).click();
-			cy.get(".competitor-full-route-btn").eq(1).click();
-
-			//// random location mass start
-			//cy.get("#synced-starts-check").should("be.checked").check();
-			cy.get("#map").dblclick(70, 100);
-			cy.wait(500);
-			cy.get("#synced-starts-check").should("be.checked");
-
-			//// Show grouping
-			cy.get("#options_show_button").click();
-			cy.get("#toggleClusterSwitch").click();
-			cy.get(".leaflet-control-grouping").first().contains("Group A");
-			cy.contains("#map", "Group A");
-			cy.contains("#map", "🇫🇮 KooVee").should("not.exist");
-			cy.contains("#map", "🇫🇮 Paimion Rasti").should("exist");
-			cy.get("#toggleClusterSwitch").click();
-
-			//// mass start simulation
-			cy.get("#synced-starts-check").should("be.checked").check();
-			cy.wait(100);
-		});
-
 		// Create second event with all fields info
 		cy.createMap("Another map");
 		cy.intercept("POST", "/clubs/kimito-sk/events/new").as("eventSubmit");
@@ -379,5 +318,66 @@ context("Dashboard actions", () => {
 			cy.contains("Björn Ekeberg", { timeout: 10_000 });
 			cy.contains("Another map", { timeout: 10_000 });
 		});
+	});
+
+	it("Player UI should work", () => {
+		// Test the event view
+		// TODO: remove depedency on previous other tests
+		cy.visit("https://kimito-sk.routechoices.dev/Jukola-2019-1st-leg");
+		cy.contains("Niels Christian Hellerud", { timeout: 20_000 }); // in competitor list
+
+		//// toggle competitor
+		cy.get("#toggleAllSwitch").uncheck();
+
+		cy.get(".competitor-switch").eq(2).check();
+		cy.contains("#map", "🇫🇮 KooVee");
+		cy.get(".competitor-switch").eq(2).uncheck();
+		cy.contains("#map", "🇫🇮 KooVee").should("not.exist");
+		cy.get(".competitor-switch").eq(1).check();
+		cy.get('[aria-label="Center"]').eq(1).click();
+		cy.contains("#map", "🇫🇮 Paimion Rasti");
+
+		cy.get("#toggleAllSwitch").check();
+
+		//// change runner color
+		cy.get(".color-tag").eq(1).click();
+		cy.contains("Select new color for Samuel Heinonen");
+		cy.get(".IroWheel").first().should("be.visible").click(50, 50);
+		cy.get("#save-color").click();
+
+		//// center on runner
+		cy.get('[aria-label="Center"]').eq(1).click();
+		cy.wait(200);
+
+		//// move progress bar and focus on runner
+		cy.get("#full_progress_bar").click(50, 7);
+		cy.get(".competitor-focus-btn").eq(1).click();
+		cy.wait(500);
+
+		//// toogle full route
+		cy.get(".competitor-highlight-btn").eq(1).click();
+		cy.get(".competitor-full-route-btn").eq(1).click();
+		cy.wait(500);
+		cy.get(".competitor-highlight-btn").eq(1).click();
+		cy.get(".competitor-full-route-btn").eq(1).click();
+
+		//// random location mass start
+		//cy.get("#synced-starts-check").should("be.checked").check();
+		cy.get("#map").dblclick(70, 90);
+		cy.wait(500);
+		cy.get("#synced-starts-check").should("be.checked");
+
+		//// Show grouping
+		cy.get("#options_show_button").click();
+		cy.get("#toggleClusterSwitch").click();
+		cy.get(".leaflet-control-grouping").first().contains("Group A");
+		cy.contains("#map", "Group A");
+		cy.contains("#map", "🇫🇮 KooVee").should("not.exist");
+		cy.contains("#map", "🇫🇮 Paimion Rasti").should("exist");
+		cy.get("#toggleClusterSwitch").click();
+
+		//// mass start simulation
+		cy.get("#synced-starts-check").should("be.checked").check();
+		cy.wait(100);
 	});
 });
