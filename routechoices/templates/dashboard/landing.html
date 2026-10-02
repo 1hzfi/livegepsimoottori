@@ -13,12 +13,6 @@
             {% if not clubs %}
             <div class="jumbotron">
                 <p>It seems you don't manage any club yet! No worries...</p>
-                <p>
-                    <span>You can create a club.</span><br/><a href="{% url 'dashboard_club:create_view' %}" class="btn btn-primary dashboard-link"><i class="fa-solid fa-circle-plus"></i> Create a Club</a>
-                </p>
-                <p>
-                    <span>Or ask to join the list of managers of an existing club.</span><br><a href="{% url 'dashboard_request_club_invite_view' %}" class="btn btn-primary dashboard-link"><i class="fa-solid fa-hand"></i> Request an invite</a>
-                </p>
             </div>
             {% else %}
             <div class="mb-3">
