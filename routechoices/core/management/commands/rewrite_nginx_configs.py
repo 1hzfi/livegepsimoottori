@@ -28,6 +28,7 @@ class Command(BaseCommand):
                 continue
             write_nginx_conf(domain)
             nginx_need_restart = True
+        # TODO: erase extra leftover configs
         if nginx_need_restart:
             self.stdout.write("Reload nginx for changes to take effect...")
             if options["post-hook"]:
