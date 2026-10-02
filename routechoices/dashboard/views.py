@@ -1688,14 +1688,15 @@ def quick_event(request):
             club=club,
         )
         # Check name colisions
-        bundle_matching_names = EventSet.objects.filter(club=club, name__iexact=name)
+        matching_names = Event.objects.filter(club=club, name__iexact=name)
 
-        if bundle_matching_names.exists():
+        if matching_names.exists():
             # We start counting
             # TODO: improve algorythm for very long names
+            # TODO: rate limit
             name_original = name
             name_safe = re.escape(name)
-            pattern = rf"^{name_safe} #(\d+)$"
+            pattern = rf"^{name_safe} - (\d+)$"
             bundle_matching_names = {
                 n.upper()
                 for n in EventSet.objects.filter(
@@ -1705,7 +1706,7 @@ def quick_event(request):
             iteration = 2
             while True:
                 suffix_len = int(math.log10(iteration)) + 2
-                name = f"{name_original[:255 - suffix_len]} #{iteration}"
+                name = f"{name_original[:255 - suffix_len]} - {iteration}"
                 if name.upper() not in bundle_matching_names:
                     break
                 iteration += 1
