@@ -1,5 +1,4 @@
 from curl_cffi import requests
-from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 
 from routechoices.core.models import (
@@ -35,15 +34,9 @@ class ThirdPartyTrackingSolution:
         self.club = self.get_or_create_club()
 
     def get_or_create_club(self):
-        if not self.name or not self.slug:
-            raise ValueError()
-        admins = User.objects.filter(is_superuser=True)
-        club, created = Club.objects.get_or_create(
-            slug=self.slug, defaults={"name": self.name}
+        club, _ = Club.objects.get_or_create(
+            slug="gepsi", defaults={"name": "GPS Trackings"}
         )
-        if created:
-            club.admins.set(admins)
-            club.save()
         return club
 
     def parse_init_data(self, uid):
@@ -156,7 +149,7 @@ class ThirdPartyTrackingSolutionWithProxy(ThirdPartyTrackingSolution):
         for dev_id, locations in devices_data.items():
             dev_hash = safe64encodedsha(f"{dev_id}:{self.uid}")[:8]
             dev_hash = f"{self.get_competitor_device_id_prefix()}{dev_hash}"
-            dev_obj, created = Device.objects.get_or_create(
+            dev_obj, _ = Device.objects.get_or_create(
                 aid=dev_hash,
                 defaults={"virtual": True},
             )
