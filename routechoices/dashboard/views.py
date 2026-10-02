@@ -1672,11 +1672,12 @@ def quick_event(request):
         slug="follow-me", defaults={"forbid_invite_request": True}
     )
     if request.method == "POST":
+        username = request.user.username
         start_date = now()
         date_str = start_date.strftime("%Y-%m-%d")
-        name = f"{request.user.username}"
+        name = f"{username}"
         slug = slugify.slugify(
-            f"{date_str} {request.user.username} {short_random_slug()}"
+            f"{date_str} {username} {short_random_slug()}"
         )
         duration = min(
             int(request.POST.get("duration", 60)), 360
@@ -1714,7 +1715,7 @@ def quick_event(request):
                 club=club,
                 competitors__in=user_trackings_competitors,
             ).update(end_date=start_date)
-            Event.objects.create(
+            event = Event.objects.create(
                 name=name,
                 event_set=bundle,
                 slug=slug,
@@ -1724,11 +1725,10 @@ def quick_event(request):
                 backdrop_map=backdrop,
                 privacy=PRIVACY_SECRET,
             )
-            username = request.user.username
             Competitor.objects.create(
                 name=username,
                 short_name=username,
-                event=e,
+                event=event,
                 device=device,
                 user=request.user,
             )
