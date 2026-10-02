@@ -1683,80 +1683,57 @@ def quick_event(request):
         )  # Default 1 hour, max 5Hours
         end_date = start_date + timedelta(minutes=duration)
         backdrop = request.POST.get("backdrop", "osm")
+    
         bundle, _ = EventSet.objects.get_or_create(
-            name=name,
+            name=f"{name} {date_str}",
             club=club,
         )
-        # Check name colisions
-        matching_names = Event.objects.filter(club=club, name__iexact=name)
-
-        if matching_names.exists():
-            # We start counting
-            # TODO: improve algorythm for very long names
-            # TODO: rate limit
-            name_original = name
-            name_safe = re.escape(name)
-            pattern = rf"^{name_safe} - (\d+)$"
-            matching_names = {
-                n.upper()
-                for n in Event.objects.filter(
-                    club=club, name__iregex=pattern
-                ).values_list("name", flat=True)
-            }
-            iteration = 2
-            while True:
-                suffix_len = int(math.log10(iteration)) + 2
-                name = f"{name_original[:255 - suffix_len]} - {iteration}"
-                if name.upper() not in matching_names:
-                    break
-                iteration += 1
-
-        e = Event(
-            name=name,
-            event_set=bundle,
-            slug=slug,
+        
+        # rate limit
+        course_in_last_24h = Event.objects.filter(
             club=club,
-            start_date=start_date,
-            end_date=end_date,
-            backdrop_map=backdrop,
-            privacy=PRIVACY_SECRET,
+            start_date__date=arrow.get().date,
+            name=name,
         )
-
-        try:
-            e.full_clean()
-        except Exception:
-            messages.error(request, "Oops, Something went wrong")
-        else:
-            device_id = request.POST.get("device_id")
-            device = Device.objects.filter(virtual=False, aid=device_id).first()
-            if not device:
-                messages.error(request, "Tracker not found")
-            else:
-                live_user_quick_tracking_competitors = Competitor.objects.filter(
-                    user=request.user,
-                    event__club=club,
-                    event__end_date__gt=start_date,
-                    device=device,
-                )
-                Event.objects.filter(
-                    club=club,
-                    competitors__in=[c for c in live_user_quick_tracking_competitors],
-                ).update(end_date=start_date)
-                # TODO: Count quick tracking event in day for suffixing name
-                cname = request.user.username
-                e.save()
-                Competitor.objects.create(
-                    name=cname,
-                    short_name=cname,
-                    event=e,
-                    device=device,
-                    user=request.user,
-                )
-                messages.success(request, "Tracking ready for your start...")
-                return redirect(
-                    "quick_event_share",
-                )
-        messages.error(request, "Could not create the quick tracking…")
+        if rate_limit_triggered := course_in_last_24h.exists():
+            messages.error(request, "You can have only on personal tracking per day")
+        
+        device_id = request.POST.get("device_id")
+        device = Device.objects.filter(virtual=False, aid=device_id).first()
+        if not device:
+            messages.error(request, "Tracker not found")
+        
+        if device and not rate_limit_triggered:
+            user_trackings_competitors = Competitor.objects.filter(
+                user=request.user,
+                event__club=club,
+                event__end_date__gt=start_date,
+                device=device,
+            )
+            Event.objects.filter(
+                club=club,
+                competitors__in=user_trackings_competitors,
+            ).update(end_date=start_date)
+            Event.objects.create(
+                name=name,
+                event_set=bundle,
+                slug=slug,
+                club=club,
+                start_date=start_date,
+                end_date=end_date,
+                backdrop_map=backdrop,
+                privacy=PRIVACY_SECRET,
+            )
+            username = request.user.username
+            Competitor.objects.create(
+                name=username,
+                short_name=username,
+                event=e,
+                device=device,
+                user=request.user,
+            )
+            messages.success(request, "Tracking ready for your start...")
+            return redirect("quick_event_share")
 
     devices = Device.objects.none()
     return render(
