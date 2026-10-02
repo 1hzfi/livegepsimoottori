@@ -1679,7 +1679,7 @@ def quick_event(request):
             f"{date_str} {request.user.username} {short_random_slug()}"
         )
         duration = min(
-            int(request.POST.get("duration", 60)), 300
+            int(request.POST.get("duration", 60)), 360
         )  # Default 1 hour, max 5Hours
         end_date = start_date + timedelta(minutes=duration)
         backdrop = request.POST.get("backdrop", "osm")
