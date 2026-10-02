@@ -1696,7 +1696,7 @@ def quick_event(request):
             name=name,
         )
         if rate_limit_triggered := course_in_last_24h.exists():
-            messages.error(request, "You can have only on personal tracking per day")
+            messages.error(request, "You can have only one personal tracking per day")
         
         device_id = request.POST.get("device_id")
         device = Device.objects.filter(virtual=False, aid=device_id).first()
