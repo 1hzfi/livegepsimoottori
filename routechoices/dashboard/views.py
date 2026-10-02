@@ -1674,11 +1674,11 @@ def quick_event(request):
     if request.method == "POST":
         start_date = now()
         date_str = start_date.strftime("%Y-%m-%d")
-        name = f"{request.user.username} - {date_str}"  # TODO: human date format here
+        name = f"{request.user.username}"
         slug = slugify.slugify(
             f"{date_str} {request.user.username} {short_random_slug()}"
         )
-        duration = max(
+        duration = min(
             int(request.POST.get("duration", 60)), 300
         )  # Default 1 hour, max 5Hours
         end_date = start_date + timedelta(minutes=duration)
@@ -1697,9 +1697,9 @@ def quick_event(request):
             name_original = name
             name_safe = re.escape(name)
             pattern = rf"^{name_safe} - (\d+)$"
-            bundle_matching_names = {
+            matching_names = {
                 n.upper()
-                for n in EventSet.objects.filter(
+                for n in Event.objects.filter(
                     club=club, name__iregex=pattern
                 ).values_list("name", flat=True)
             }
