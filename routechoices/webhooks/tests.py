@@ -555,7 +555,7 @@ class RLWebHookTestCase(EssentialApiBase):
             res_data["courses"][0]["map_upload_url"],
             f"https://dashboard.rc.local.1hz.fi/clubs/kiilat/events/{first_course.aid}/map",
         )
-        self.assertEqual(first_course.name, "Turku Rastit - 12.08.2026 - A-rata")
+        self.assertEqual(first_course.name, "A-rata")
         self.assertTrue(first_course.slug.startswith("turku-rastit-12-08-2026-a-rata-"))
 
         event_set.refresh_from_db()
