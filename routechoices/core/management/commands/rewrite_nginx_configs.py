@@ -1,5 +1,4 @@
 import subprocess
-from pathlib import Path
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -19,13 +18,9 @@ class Command(BaseCommand):
         nginx_need_restart = False
         domains = options["domains"]
         if not domains:
-            clubs_w_domain = Club.objects.exclude(domain="")
-            for club in clubs_w_domain:
-                domain = club.domain
-                if Path(f"{settings.BASE_DIR}/nginx/certs/{domain}.key").exists():
-                    domains.append(domain)
+            domains = Club.objects.exclude(domain="")
             if not domains:
-                self.stderr.write("No clubs have certificates")
+                self.stderr.write("No clubs have setup custom domain")
         for domain in domains:
             club = Club.objects.filter(domain=domain).first()
             if not club:
