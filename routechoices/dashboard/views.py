@@ -1692,7 +1692,7 @@ def quick_event(request):
         # rate limit
         course_in_last_24h = Event.objects.filter(
             club=club,
-            start_date__date=arrow.get().date,
+            start_date__date=arrow.get().date(),
             name=name,
         )
         if rate_limit_triggered := course_in_last_24h.exists():
