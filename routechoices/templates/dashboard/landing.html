@@ -16,7 +16,9 @@
             </div>
             {% else %}
             <div class="mb-3">
-                <h3>Select one of club</h3>
+                {% if clubs.count > 1 %}
+                <h3>Select one club</h3>
+                {% endif %}
                 {% if clubs.paginator.num_pages > 1 %}{% bootstrap_pagination clubs extra=request.GET.urlencode pages_to_show=4 %}{% endif %}
                 {% for club in clubs %}
                 <div class="card flex-row flex-no-wrap club-card mb-3">
