@@ -16,17 +16,26 @@
             <div class="card-body p-4 p-sm-5">
                 <div class="col-12">
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-12 d-flex justify-content-between">
                             <h1>
                                 Hello <i>{{ request.user.username }}</i>! <i class="fa-solid fa-hand" style="transform: rotate( 34deg);"></i>
                             </h1>
-                            <div>
-                                <a class="btn btn-secondary dashboard-link me-1" data-bs-toggle="tooltip" data-bs-title="Single person GPS tracking without custom maps starting immediately" href="{% url 'quick_start_view' %}">
-                                    <i class="fa-solid fa-circle-plus"></i> <span>Start a tracking for yourself</span>
-                                </a>
-                                <a class="btn btn-secondary dashboard-link" href="{% url 'dashboard_participations_view' %}">
-                                    <i class="fa-solid fa-medal"></i> <span>Manage your participations</span>
-                                </a>
+                            <div class="dropdown mb-1">
+                                <button class="btn text-muted" type="button" id="clubsMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-bars"></i>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="clubsMenuBtn">
+                                    <li>
+                                        <a class="dropdown-item" data-bs-toggle="tooltip" data-bs-title="Single person GPS tracking without custom maps starting immediately" href="{% url 'quick_start_view' %}">
+                                            <i class="fa-solid fa-play"></i> <span>Start tracking</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'dashboard_participations_view' %}">
+                                            <i class="fa-solid fa-medal"></i> <span>Participations History</span>
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>

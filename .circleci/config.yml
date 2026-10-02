@@ -10,16 +10,16 @@ commands:
           name: Setup local certificates
           command: |
             ./gen-local-certs.sh
-            chmod -R 755 ./letsencrypt/live/routechoices.dev/
+            chmod -R 755 ./letsencrypt/live/rc.local.1hz.fi/
 
       - run:
-          name: Override DNS for routechoices.dev
+          name: Override DNS for rc.local.1hz.fi
           command: |
             echo "DNSStubListener=no" | sudo tee -a /etc/systemd/resolved.conf
             sudo systemctl restart systemd-resolved
             sudo apt-get update
             sudo apt-get install -y dnsmasq
-            echo -e "bind-interfaces\nlisten-address=127.0.0.1\naddress=/routechoices.dev/127.0.0.1\naddress=/.routechoices.dev/127.0.0.1" | sudo tee /etc/dnsmasq.conf
+            echo -e "bind-interfaces\nlisten-address=127.0.0.1\naddress=/rc.local.1hz.fi/127.0.0.1\naddress=/.rc.local.1hz.fi/127.0.0.1" | sudo tee /etc/dnsmasq.conf
             sudo systemctl restart dnsmasq
             cat <(echo "nameserver 127.0.0.1") /etc/resolv.conf | sudo tee /tmp/resolv.conf
             sudo rm /etc/resolv.conf
@@ -50,7 +50,7 @@ commands:
     steps:
       - run:
           name: Wait for the site to be online
-          command: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
+          command: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.rc.local.1hz.fi/)" != "200" ]]; do sleep 5; done' || false
 
 jobs:
   python-tests:

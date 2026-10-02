@@ -9,9 +9,9 @@
 {% block content %}
     <div class="row">
         <div class="col-12">
-            <h1>Create Quick Tracking</h1>
-            <p>
-                With <i>Quick Tracking</i> create a secret GPS tracking page for a single person without custom maps.
+            <h1>Create Tracking Page</h1>
+            <p class="text-muted">
+                Create a secret GPS tracking page for a single person without custom maps.
             </p>
             <form action="" id="quick-creation-form" method="POST">
                 {% csrf_token %}
@@ -56,7 +56,7 @@
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary mb-1" id="submit-btn">
-                    <i class="fa-solid fa-circle-plus"></i> Create Quick Tracking Page
+                    <i class="fa-solid fa-circle-plus"></i> Create Tracking Page
                 </button>
             </form>
         </div>

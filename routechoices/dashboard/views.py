@@ -1,9 +1,12 @@
 import csv
 import json
+import math
+import re
 from copy import deepcopy
 from datetime import timedelta
 from io import StringIO
 
+import slugify
 from allauth.account.adapter import get_adapter
 from allauth.account.forms import default_token_generator
 from allauth.account.models import EmailAddress
@@ -1671,8 +1674,10 @@ def quick_event(request):
     if request.method == "POST":
         start_date = now()
         date_str = start_date.strftime("%Y-%m-%d")
-        name = f"GPS Tracking {date_str}"
-        slug = f"{date_str}-{request.user.username}-{short_random_slug()}"
+        name = f"GPS Tracking {date_str}"  # TODO: human date format here
+        slug = slugify.slugify(
+            f"{date_str} {request.user.username} {short_random_slug()}"
+        )
         duration = max(
             int(request.POST.get("duration", 60)), 300
         )  # Default 1 hour, max 5Hours
@@ -1682,6 +1687,29 @@ def quick_event(request):
             name=name,
             club=club,
         )
+        # Check name colisions
+        bundle_matching_names = EventSet.objects.filter(club=club, name__iexact=name)
+
+        if bundle_matching_names.exists():
+            # We start counting
+            # TODO: improve algorythm for very long names
+            name_original = name
+            name_safe = re.escape(name)
+            pattern = rf"^{name_safe} #(\d+)$"
+            bundle_matching_names = {
+                n.upper()
+                for n in EventSet.objects.filter(
+                    club=club, name__iregex=pattern
+                ).values_list("name", flat=True)
+            }
+            iteration = 2
+            while True:
+                suffix_len = int(math.log10(iteration)) + 2
+                name = f"{name_original[:255 - suffix_len]} #{iteration}"
+                if name.upper() not in bundle_matching_names:
+                    break
+                iteration += 1
+
         e = Event(
             name=name,
             event_set=bundle,
@@ -1723,7 +1751,7 @@ def quick_event(request):
                     device=device,
                     user=request.user,
                 )
-                messages.success(request, "Quick tracking ready for your start...")
+                messages.success(request, "Tracking ready for your start...")
                 return redirect(
                     "quick_event_share",
                 )

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
-NAME=routechoices
-DOMAIN=routechoices.dev # Use your own domain name
+NAME=routechoicesLocal
+DOMAIN=rc.local.1hz.fi # Use your own domain name
 
 mkdir -p "letsencrypt/live/${DOMAIN}/"
 cd "letsencrypt/live/${DOMAIN}/"
