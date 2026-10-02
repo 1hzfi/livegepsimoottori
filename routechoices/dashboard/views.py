@@ -27,11 +27,11 @@ from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
 from django_hosts.resolvers import reverse
 from hijack.views import ReleaseUserView
+from invitations.forms import InviteForm
 from kagi.views.backup_codes import BackupCodesView
 from oauth2_provider.models import AccessToken
 from user_sessions.views import SessionDeleteOtherView
 
-from invitations.forms import InviteForm
 from routechoices.api.views import device_ownership_api_view
 from routechoices.core.models import (
     PRIVACY_SECRET,
@@ -136,12 +136,10 @@ def home_view(request):
         "event", "event__club", "device"
     ).order_by("-event__start_date")
     has_more_participations = participations.count() > 5
-    club_list = Club.objects.filter(admins=request.user)
     return render(
         request,
         "dashboard/landing.html",
         {
-            "clubs": club_list,
             "participations": participations[:5],
             "has_more_participations": has_more_participations,
         },
@@ -1673,16 +1671,20 @@ def quick_event(request):
     if request.method == "POST":
         start_date = now()
         date_str = start_date.strftime("%Y-%m-%d")
-        name = f"GPS Tracking {date_str} - {request.user.username}"
+        name = f"GPS Tracking {date_str}"
         slug = f"{date_str}-{request.user.username}-{short_random_slug()}"
         duration = max(
             int(request.POST.get("duration", 60)), 300
         )  # Default 1 hour, max 5Hours
         end_date = start_date + timedelta(minutes=duration)
         backdrop = request.POST.get("backdrop", "osm")
-
+        bundle, _ = EventSet.objects.get_or_create(
+            name=name,
+            club=club,
+        )
         e = Event(
             name=name,
+            event_set=bundle,
             slug=slug,
             club=club,
             start_date=start_date,

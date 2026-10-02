@@ -12,15 +12,35 @@
 {% block sub_content %}
     <div class="row">
         <div class="col-12">
-            <h1 class="text-truncate text-no-wrap">
-                <img src="{% if club.logo %}{{ club.logo_url_www }}{% else %}{% static 'img/club-default.png' %}{% endif %}"
-                     width="80"
-                     height="80"
-                     alt="Club {{ club.name }} Logo"
-                     class="rounded">
-                <span>{{ club.name }}</span>
-            </h1>
+            <div class="d-flex justify-content-between">
+                <h1 class="text-truncate text-no-wrap">
+                    <img src="{% if club.logo %}{{ club.logo_url_www }}{% else %}{% static 'img/club-default.png' %}{% endif %}"
+                        width="80"
+                        height="80"
+                        alt="Club {{ club.name }} Logo"
+                        class="rounded">
+                    <span>{{ club.name }}</span>
+                </h1>
+                {% if clubs.count > 2 %}
+                <div class="dropdown mb-1">
+                    <button class="btn text-muted" type="button" id="clubsMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-right-left"></i> Switch club
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="clubsMenuBtn">
+                        {% for c in clubs %}
+                        <li>
+                            <a class="px-2 dropdown-item" href="{% url 'dashboard_club:edit_view' club_slug=c.slug %}?next={{ next }}">
+                                <img class="card-img-left rounded" src="{% if c.logo %}{{ c.logo_url_www }}{% else %}{% static '/img/club-default.png' %}{% endif %}" height="30" width="30" alt="Club {{ c.name }} Logo">
+                                <span>{{ c.name }}</span>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
         </div>
+        <div class="mb-3">Club pages hosted at <a href="{{ club.nice_url }}">{{ club.nice_url }}</a></div>
     </div>
     {% if not club.upgraded %}
         <p class="p-1 text-center"
@@ -75,9 +95,6 @@
             </li>
         </ul>
         {% block sub_sub_content %}
-            <p>
-                Club pages hosted at <a href="{{ club.nice_url }}">{{ club.nice_url }}</a>
-            </p>
             <p>
                 <a class="btn btn-info mb-1 me-1"
                    href="{% url 'dashboard_club:custom_domain_view' club_slug=request.club.slug %}"><i class="fa-solid fa-link"></i> Custom Domain Management</a>
