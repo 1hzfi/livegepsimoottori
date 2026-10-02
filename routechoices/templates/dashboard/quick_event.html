@@ -14,9 +14,9 @@
 </div>
     <div class="row">
         <div class="col-12">
-            <h1>Create Tracking Page</h1>
+            <h1>Publish a Tracking Page</h1>
             <p class="text-muted">
-                Create a secret GPS tracking page for yourself.
+                Publish a secret GPS tracking page to share with your gang.
             </p>
             <form action="" id="quick-creation-form" method="POST">
                 {% csrf_token %}
@@ -52,12 +52,12 @@
                         <option value="topo-world-alt">Topo World (ArcGIS)</option>
                     </select>
                 </div>
-                <div class="mb-3">
+                <div class="d-none" mb-3">
                     <label class="form-label fw-bold" for="duration">Duration</label>
                     <select name="duration" id="id_duration" class="form-select">
                         <option value="60">1 hour</option>
                         <option value="180">3 hours</option>
-                        <option value="300">5 hours</option>
+                        <option value="360" selected>6 hours</option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary mb-1" id="submit-btn">
