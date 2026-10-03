@@ -18,10 +18,6 @@
 	color: var(--bs-body-color);
 }
 
-.blink-icon {
-	animation: pulse-animation 1.5s infinite ease-in-out;
-}
-
 @keyframes pulse-animation {
 	0% {
 		opacity: 1;

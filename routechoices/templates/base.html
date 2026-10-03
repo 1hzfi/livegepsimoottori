@@ -60,13 +60,13 @@
                     {% endblock content %}
                 </div>
             {% endblock contentup %}
-            {% block footer %}
+            {% block footer{ %}
                 {% if request.club_slug %}
                     {% include "club/footer.html" %}
                 {% else %}
                     {% include "footer.html" %}
                 {% endif %}
-            {% endblock footer %}
+            {% endblock footer{ %}
         {% endblock body %}
         <script
             src="https://browser.sentry-cdn.com/10.71.0/bundle.min.js"

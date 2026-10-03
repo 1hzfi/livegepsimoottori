@@ -1,6 +1,6 @@
 services:
   db:
-    container_name: rc_postgres
+    container_name: rc_db
     image: postgres:18
     environment:
       POSTGRES_DB: app_db
@@ -9,8 +9,8 @@ services:
     restart: always
     expose:
       - "5432"
-  e2e-db:
-    container_name: rc_e2e_postgres
+  e2edb:
+    container_name: rc_e2e_db
     image: postgres:18
     environment:
       POSTGRES_DB: app_db
@@ -69,7 +69,11 @@ services:
     links:
       - s3
       - django
-    command: ['nginx', '-g', 'daemon off;']
+    command: [
+      'nginx',
+      '-g',
+      'daemon off;'
+    ]
     build:
       context: "."
       platforms:
@@ -81,16 +85,16 @@ services:
     volumes:
       - ../:/app/:rw
       - ../bin/:/app/bin/
-    ports:
-      - "2000:2000"
-      - "2001:2001"
-      - "2002:2002"
-      - "2003:2003"
-    expose:
-      - "2000"
-      - "2002"
     links:
       - db
       - s3
       - smtp
-    command: ["gunicorn", "--bind", ":8000", "--workers", "${NUM_PROCESSES:-3}", "--reload", "routechoices.${WSGI_FILE:-wsgi}:application",]
+    command: [
+      "gunicorn",
+      "--bind",
+      ":8000",
+      "--workers",
+      "${NUM_PROCESSES:-3}",
+      "--reload",
+      "routechoices.${WSGI_FILE:-wsgi}:application",
+    ]

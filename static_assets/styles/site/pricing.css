@@ -370,7 +370,7 @@ a #generic_price_table .generic_content.active .generic_price_btn {
 	text-transform: uppercase;
 	display: inline-block;
 }
-#generic_price_table_home .footer {
+#generic_price_table_home footer {
 	padding: 40px 0;
 }
 

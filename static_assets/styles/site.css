@@ -106,7 +106,7 @@
 }
 
 html {
-	height: 100%;
+	height: calc(100% + 100px);
 }
 
 body {
@@ -115,10 +115,15 @@ body {
 	-webkit-flex-direction: column;
 	height: 100%;
 	padding-top: 0px;
+	font-family: "Twemoji Country Flags", var(--bs-body-font-family) !important;
 }
 
 .flags-polyfill {
 	font-family: "Twemoji Country Flags", var(--bs-body-font-family);
+}
+
+.blink-icon {
+	animation: pulse-animation 1.5s infinite ease-in-out;
 }
 
 .site-name {
@@ -135,67 +140,10 @@ body {
 	padding-top: 15px;
 }
 
-.club-footer {
-	background-color: #3a3f46;
-	color: white;
-}
-
-.club-footer a {
-	color: #fff;
-	text-decoration: none;
-}
-
-#myFooter {
-	background-color: #3a3f46;
-	color: white;
-}
-
-#myFooter .row {
-	margin-bottom: 60px;
-}
-
-#myFooter .info {
-	color: #afb0b1;
-}
-
-#myFooter ul {
-	list-style-type: none;
-	padding-left: 0;
-	line-height: 1.7;
-}
-
-#myFooter h5 {
-	font-size: 1.2rem;
-	color: white;
-	font-weight: bold;
-	margin-top: 30px;
-}
-
-#myFooter a {
-	color: #d2d1d1;
-	text-decoration: none;
-}
-
-#myFooter .logosmall a {
-	color: white;
-}
-
-#myFooter a:hover,
-#myFooter a:focus {
-	text-decoration: none;
-	color: white;
-}
-
 a.navbar-brand.logo:hover,
 a.navbar-brand.logo:focus {
 	text-decoration: none;
 	color: white;
-}
-
-#myFooter .second-bar {
-	text-align: center;
-	background-color: #33373e;
-	color: #afb0b1;
 }
 
 .made-by {
@@ -207,43 +155,23 @@ a.navbar-brand.logo:focus {
 	padding-bottom: 10px;
 }
 
-#myFooter .social-icons {
-	float: right;
-}
-
-#myFooter .github:hover {
-	color: #ffffff;
-}
-
-#myFooter .instagram:hover {
-	color: #c226cd;
-}
-
-#myFooter .twitter:hover {
-	color: #00aced;
-}
-
 .loginBtn {
 	margin-bottom: 10px;
 }
 
 @media screen and (max-width: 767px) {
-	#myFooter {
+	footer {
 		text-align: center;
 	}
 
-	#myFooter .info {
+	footer .info {
 		text-align: center;
 	}
 }
 
-#myFooter {
+footer {
 	flex: 0 0 auto;
 	-webkit-flex: 0 0 auto;
-}
-
-#myFooter .logosmall {
-	margin-top: 5px;
 }
 
 .navbar {
@@ -507,10 +435,17 @@ a.navbar-brand.logo:focus {
 	background-color: #808080;
 }
 
-body {
-	font-family: "Twemoji Country Flags", var(--bs-body-font-family) !important;
+.www-footer {
+	background-color: #545554 !important;
+	color: var(--bs-body-color);
 }
 
-#myFooter .second-bar {
-	clip-path: polygon(100% 100%, 100% 30%, 75% 39%, 76% 0, 0 5%, 0 100%);
+.end-credits {
+	background-color: black !important;
+	color: #d4d8d2;
+}
+
+.the-end {
+	background-color: white !important;
+	color: var(--bs-body-color);
 }
