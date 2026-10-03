@@ -9,8 +9,18 @@ services:
     restart: always
     expose:
       - "5432"
-  minio:
-    container_name: rc_minio
+  e2e-db:
+    container_name: rc_e2e_postgres
+    image: postgres:18
+    environment:
+      POSTGRES_DB: app_db
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: changeme
+    restart: always
+    expose:
+      - "5432"
+  s3:
+    container_name: rc_filestore
     image: ghcr.io/versity/versitygw:latest
     volumes:
       - ../media/s3:/data/s3
@@ -57,7 +67,7 @@ services:
       - ../letsencrypt/:/etc/nginx/ssl:ro
       - ../nginx/routechoices.conf:/etc/nginx/http.d/routechoices.conf:ro
     links:
-      - minio
+      - s3
       - django
     command: ['nginx', '-g', 'daemon off;']
     build:
@@ -81,6 +91,6 @@ services:
       - "2002"
     links:
       - db
-      - minio
+      - s3
       - smtp
     command: ["gunicorn", "--bind", ":8000", "--workers", "${NUM_PROCESSES:-3}", "--reload", "routechoices.${WSGI_FILE:-wsgi}:application",]
