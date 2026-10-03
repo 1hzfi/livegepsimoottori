@@ -1,0 +1,5 @@
+# Security contact information for routechoices.com and sites powered by it
+Contact: https://security@onehertz.fi
+Expires: 2027-09-01T00:00:00Z
+Preferred-Languages: en
+Canonical: https://www.routechoices.com/.well-known/security.txt

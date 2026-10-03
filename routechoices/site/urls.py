@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from django_hosts.resolvers import reverse
 
+from routechoices.core import views as core_views
 from routechoices.site import feeds, views
 from routechoices.site.sitemaps import DynamicViewSitemap, StaticViewSitemap
 
@@ -111,4 +112,5 @@ urlpatterns = [
         views.handle_alt_club_url,
         name="alt_club_url",
     ),
+    path(".well-known/security.txt", core_views.security_txt),
 ]

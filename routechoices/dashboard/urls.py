@@ -7,6 +7,7 @@ from django.views.generic.base import RedirectView
 from user_sessions import views as user_sessions_views
 
 from routechoices.api import views as api_views
+from routechoices.core import views as core_views
 from routechoices.dashboard import views
 from routechoices.site import views as site_views
 
@@ -431,4 +432,5 @@ urlpatterns = [
         ".well-known/change-password",
         RedirectView.as_view(pattern_name="account_password_change_view"),
     ),
+    path(".well-known/security.txt", core_views.security_txt),
 ]

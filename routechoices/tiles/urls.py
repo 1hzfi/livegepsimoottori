@@ -1,5 +1,6 @@
-from django.urls import re_path
+from django.urls import path, re_path
 
+from routechoices.core import views as core_views
 from routechoices.tiles import views
 
 urlpatterns = [
@@ -9,4 +10,5 @@ urlpatterns = [
         views.serve_tile_proxy,
         name="proxy_tile_service",
     ),
+    path(".well-known/security.txt", core_views.security_txt),
 ]

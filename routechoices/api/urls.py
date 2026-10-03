@@ -7,6 +7,7 @@ from health_check.views import HealthCheckView
 from rest_framework import permissions
 
 from routechoices.api import views
+from routechoices.core import views as core_views
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -241,4 +242,5 @@ urlpatterns = [
             (oauth2_endpoint_views, "oauth2_provider"), namespace="oauth2_provider"
         ),
     ),
+    path(".well-known/security.txt", core_views.security_txt),
 ]

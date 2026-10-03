@@ -2,6 +2,7 @@ from django.urls import include, path, re_path
 
 from routechoices.club import views
 from routechoices.club.sitemaps import DynamicViewSitemap
+from routechoices.core import views as core_views
 
 sitemaps = {
     "dynamic": DynamicViewSitemap,
@@ -177,4 +178,5 @@ urlpatterns = [
             ]
         ),
     ),
+    path(".well-known/security.txt", core_views.security_txt),
 ]
