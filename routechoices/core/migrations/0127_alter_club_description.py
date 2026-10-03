@@ -14,10 +14,10 @@ def forwards_func(apps, schema_editor):
     ]
     for line in lines_to_remove:
         cc = Club.objects.filter(
-            description__contains="*This website is powered by Routechoices.com*"
+            description__contains=line
         )
         for c in cc:
-            c.description = c.description.replace("line", "").strip()
+            c.description = c.description.replace(line, "").strip()
             c.save()
 
 
