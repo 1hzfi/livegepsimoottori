@@ -7,18 +7,23 @@ def forwards_func(apps, schema_editor):
     Club = apps.get_model("core", "Club")
     db_alias = schema_editor.connection.alias
 
-    lines_to_remove = [
-        "## GPS Tracking",
-        "Follow our events live or replay them later.",
-        "*This website is powered by Routechoices.com*",
-    ]
-    for line in lines_to_remove:
-        cc = Club.objects.filter(
-            description__contains=line
-        )
-        for c in cc:
-            c.description = c.description.replace(line, "").strip()
-            c.save()
+lines_to_remove = [
+    "## GPS Tracking",
+    "## Live GPS Tracking",
+    "Follow our events live or replay them later.",
+    "*This website is powered by Routechoices.com*",
+    "# GPS tracking powered by routechoices.com",
+    "Browse our events here.",
+    *Ce site web est proposé par Routechoices.com*
+
+]
+for line in lines_to_remove:
+    cc = Club.objects.filter(
+        description__contains=line
+    )
+    for c in cc:
+        c.description = c.description.replace(line, "").strip()
+        c.save()
 
 
 class Migration(migrations.Migration):
