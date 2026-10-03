@@ -356,11 +356,7 @@ class Club(models.Model):
     admins = models.ManyToManyField(User)
     description = models.TextField(
         blank=True,
-        default="""## GPS Tracking
-
-Follow our events live or replay them later.
-
-*This website is powered by Routechoices.com*""",
+        default="",
         help_text=(
             "This text will be displayed on the club site frontpage, "
             "use markdown formatting"
