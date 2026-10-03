@@ -35,10 +35,11 @@
 {% endblock sub_content %}
 
 {% block extra_body %}
-<script src="{% static 'scripts/load-local-variables.js' %}?v=2023112700"
-        data-url="{{ event.shortcut }}"></script>
-    {% compress js %}
-        <script src="{% static 'vendor/umbrella-3.3.3/umbrella.min.js' %}"></script>
-        <script src="{% static 'scripts/dashboard/quick_event_sharing.js' %}"></script>
-    {% endcompress %}
+<script src="{% static 'scripts/load-local-variables.js' %}{{ engine_version_static_cache_buster }}"
+        data-url="{{ event.shortcut }}"
+></script>
+{% compress js %}
+<script src="{% static 'vendor/umbrella-3.3.3/umbrella.min.js' %}"></script>
+<script src="{% static 'scripts/dashboard/quick_event_sharing.js' %}"></script>
+{% endcompress %}
 {% endblock extra_body %}

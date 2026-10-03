@@ -5,9 +5,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="apple-touch-icon"
-              href="{% static 'apple-touch-icon.png' %}?v=20250709" />
-        <link rel="icon" sizes="any" href="{% static 'favicon.ico' %}?v=20250709" />
-        <link rel="manifest" href="{% static 'manifest.json' %}?v=20250709" />
+              href="{% static 'apple-touch-icon.png' %}{{ engine_version_static_cache_buster }}" />
+        <link rel="icon" sizes="any" href="{% static 'favicon.ico' %}{{ engine_version_static_cache_buster }}" />
+        <link rel="manifest" href="{% static 'manifest.json' %}{{ engine_version_static_cache_buster }}" />
         <meta name="apple-mobile-web-app-title" content="Routechoices | GPS Tracking" />
         <meta name="application-name" content="Routechoices | GPS Tracking" />
         <meta name="theme-color" content="#ffffff" />

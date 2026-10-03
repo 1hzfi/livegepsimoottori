@@ -21,7 +21,7 @@
             </span>
         {% else %}
             <span class="d-inline-block">
-                <img src="{% static 'img/logo.png' %}?v=20250709"
+                <img src="{% static 'img/logo.png' %}{{ engine_version_static_cache_buster }}"
                      alt="Site logo"
                      height="40"
                      width="40"

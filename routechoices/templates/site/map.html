@@ -3,7 +3,7 @@
 <html lang="en-us">
     <head>
         <title>Map | Routechoices | GPS Tracking</title>
-        <link rel="shortcut icon" href="{% static 'favicon.ico' %}?v=20250709" />
+        <link rel="shortcut icon" href="{% static 'favicon.ico' %}{{ engine_version_static_cache_buster }}" />
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description"
@@ -49,7 +49,7 @@
             integrity="sha384-Z0GeEnLeg0yvo3LU6sdGDESgTZCwpVvZBIgcnddmSR+ovRPe8Esn+19CrZdcxC4Z"
             crossorigin="anonymous"
         ></script>
-        <script src="{% static 'scripts/load-local-variables.js' %}?v=2023112700"
+        <script src="{% static 'scripts/load-local-variables.js' %}{{ engine_version_static_cache_buster }}"
                 data-api-root="{% host_url 'api_doc' host 'api' %}"></script>
         {% compress js %}
             <script src="{% static 'vendor/leaflet-1.9.4/leaflet.js' %}"></script>

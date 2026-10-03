@@ -2,9 +2,9 @@
 {% load hosts static %}
 {% block favicon %}
     <link rel="apple-touch-icon"
-          href="{% static 'apple-touch-icon.png' %}?v=20250709" />
-    <link rel="icon" sizes="32x32" href="{% static 'favicon.ico' %}?v=20250709" />
-    <link rel="manifest" href="{% static 'manifest.json' %}?v=20250709" />
+          href="{% static 'apple-touch-icon.png' %}{{ engine_version_static_cache_buster }}" />
+    <link rel="icon" sizes="32x32" href="{% static 'favicon.ico' %}{{ engine_version_static_cache_buster }}" />
+    <link rel="manifest" href="{% static 'manifest.json' %}{{ engine_version_static_cache_buster }}" />
 {% endblock favicon %}
 
 {% block content %}

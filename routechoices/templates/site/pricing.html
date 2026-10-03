@@ -6,7 +6,7 @@
     {{ block.super }}
     {% compress css %}
         <link rel="stylesheet"
-              href="{% static 'styles/site/pricing.css' %}?v=2021100200" />
+              href="{% static 'styles/site/pricing.css' %}{{ engine_version_static_cache_buster }}" />
     {% endcompress %}
 {% endblock extra_head %}
 

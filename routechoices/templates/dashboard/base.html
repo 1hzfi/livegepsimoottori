@@ -11,9 +11,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {% block favicon %}
-            <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}?v=20250709" />
-            <link rel="icon" sizes="32x32" href="{% static 'favicon.ico' %}?v=20250709" />
-            <link rel="manifest" href="{% static 'manifest.json' %}?v=20250709" />
+            <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}{{ engine_version_static_cache_buster }}" />
+            <link rel="icon" sizes="32x32" href="{% static 'favicon.ico' %}{{ engine_version_static_cache_buster }}" />
+            <link rel="manifest" href="{% static 'manifest.json' %}{{ engine_version_static_cache_buster }}" />
         {% endblock favicon %}
         <meta name="apple-mobile-web-app-title" content="Routechoices Dashboard" />
         <meta name="application-name" content="Routechoices Dashboard" />
@@ -34,7 +34,7 @@
             <meta property="og:locale" content="en_US" />
             <meta property="og:site_name" content="Routechoices | GPS Tracking" />
             <meta name="twitter:card" content="summary_large_image" />
-            <meta property="og:image" content="{% static 'img/og.jpg' %}?v=2025081200" />
+            <meta property="og:image" content="{% static 'img/og.jpg' %}{{ engine_version_static_cache_buster }}" />
             <meta property="og:image:width" content="1200" />
             <meta property="og:image:height" content="630" />
         {% endblock extra_head %}
@@ -64,24 +64,27 @@
             integrity="sha384-Z0GeEnLeg0yvo3LU6sdGDESgTZCwpVvZBIgcnddmSR+ovRPe8Esn+19CrZdcxC4Z"
             crossorigin="anonymous"
         ></script>
-        <script src="{% static 'scripts/load-local-variables.js' %}?v=2023112700"
+        <script src="{% static 'scripts/load-local-variables.js' %}{{ engine_version_static_cache_buster }}"
                 data-site-version="{{ version }}"
                 data-sentry-dsn="{{ sentry_dsn }}"
                 data-api-root="{% host_url 'api_doc' host 'api' %}">
         </script>
         {% if analytics_enabled and request.host.name != 'dashboard' %}
-            <script defer
-                    {% if request.club_slug %}data-club-slug="{{ request.club_slug }}"{% endif %}
-                    data-domain="{{ site.domain }}"
-                    data-api="https://www.routechoices.com/ping"
-                    src="{% static 'vendor/plausible/ping.js' %}?v=2025041302"></script>
+        <script src="{% static 'vendor/plausible/ping.js' %}{{ engine_version_static_cache_buster }}"
+                defer
+                data-domain="{{ site.domain }}"
+                data-api="https://www.routechoices.com/ping"
+                {% if request.club_slug %}
+                data-club-slug="{{ request.club_slug }}"
+                {% endif %}
+        ></script>
         {% endif %}
         {% compress js %}
-            <script src="{% static 'vendor/popper-2.11.6/popper.min.js' %}"></script>
-            <script src="{% static 'vendor/bootstrap-5.3.8/bootstrap.bundle.min.js' %}"></script>
-            <script src="{% static 'vendor/bootstrap_sweetalert-1.0.1/sweetalert.min.js' %}"></script>
-            <script src="{% static 'vendor/emoji-supported-1.0.0/emoji-supported.min.js' %}"></script>
-            <script src="{% static 'scripts/site/base.js' %}"></script>
+        <script src="{% static 'vendor/popper-2.11.6/popper.min.js' %}"></script>
+        <script src="{% static 'vendor/bootstrap-5.3.8/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'vendor/bootstrap_sweetalert-1.0.1/sweetalert.min.js' %}"></script>
+        <script src="{% static 'vendor/emoji-supported-1.0.0/emoji-supported.min.js' %}"></script>
+        <script src="{% static 'scripts/site/base.js' %}"></script>
         {% endcompress %}
         {% block extra_body %}
         {% endblock extra_body %}

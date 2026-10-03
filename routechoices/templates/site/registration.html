@@ -3,7 +3,7 @@
 {% block extra_head %}
     {{ block.super }}
     <link rel="stylesheet"
-          href="{% static 'styles/site/tracker.css' %}?v=2022022600" />
+          href="{% static 'styles/site/tracker.css' %}{{ engine_version_static_cache_buster }}" />
 {% endblock extra_head %}
 
 {% block head_title %}Registration | Routechoices | GPS Tracking{% endblock %}

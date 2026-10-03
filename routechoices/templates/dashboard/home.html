@@ -3,7 +3,7 @@
 {% block extra_head %}
     {% compress css %}
         <link rel="stylesheet"
-              href="{% static 'styles/dashboard/home.css' %}?v=2021100200" />
+              href="{% static 'styles/dashboard/home.css' %}{{ engine_version_static_cache_buster }}" />
     {% endcompress %}
 {% endblock extra_head %}
 

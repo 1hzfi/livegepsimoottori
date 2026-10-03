@@ -10,7 +10,7 @@
         <meta charset="utf-8"/>
         <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <link rel="stylesheet" href="/static/vendor/bootstrap-5.3.8/bootstrap.min.css?v=2023123100"/>
+        <link rel="stylesheet" href="/static/vendor/bootstrap-5.3.8/bootstrap.min.css{{ engine_version_static_cache_buster }}"/>
       </head>
       <body>
         <main class="container">

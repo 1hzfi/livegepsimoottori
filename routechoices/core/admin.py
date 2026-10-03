@@ -931,7 +931,7 @@ class DeviceAdmin(admin.ModelAdmin):
     class Media:
         js = [
             "/static/vendor/gps-encoding-2025.02.28/gps-encoding.js",
-            "/static/scripts/admin/device.js?v=2026040400",
+            "/static/scripts/admin/device.js{{ engine_version_static_cache_buster }}",
         ]
 
     list_display = (

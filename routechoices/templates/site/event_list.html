@@ -8,9 +8,9 @@
 <link rel="icon" sizes="32x32" href="{{ club.nice_url }}favicon.ico?v={{ club.logo_hash }}" />
 <link rel="manifest" href="{{ club.nice_url }}manifest.json?v={{ club.modification_date.timestamp }}" />
 {% else %}
-<link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}?v=20250709" />
-<link rel="icon" sizes="32x32" href="{% static 'favicon.ico' %}?v=20250709" />
-<link rel="manifest" href="{% static 'manifest.json' %}?v=20250709" />
+<link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}{{ engine_version_static_cache_buster }}" />
+<link rel="icon" sizes="32x32" href="{% static 'favicon.ico' %}{{ engine_version_static_cache_buster }}" />
+<link rel="manifest" href="{% static 'manifest.json' %}{{ engine_version_static_cache_buster }}" />
 {% endif %}
 {% endblock favicon %}
 
@@ -26,7 +26,7 @@
 <meta property="og:locale" content="en_US" />
 <meta property="og:site_name" content="Routechoices | GPS Tracking" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta property="og:image" content="{% if club %}{{ club.nice_url }}thumbnail{% else %}{% static 'img/og.jpg' %}?v=2025081200{% endif %}" />
+<meta property="og:image" content="{% if club %}{{ club.nice_url }}thumbnail{% else %}{% static 'img/og.jpg' %}?v=26{% endif %}" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 {% compress css %}
@@ -42,7 +42,7 @@
 <div class="container-fluid p-0">
     <div class="row m-0">
         <div class="w-100 rc-club-w-banner" style="--rc--club-banner-url: url({{ club.banner_url }});">
-            <div class="container content" style="min-height: 100px">
+            <div class="container content">
                 <div class="row">
                     <div>
                         <div class="d-flex justify-content-start">
@@ -251,11 +251,20 @@
                         <button class="btn btn-primary text-nowrap" type="submit">Search <i class="fa-solid fa-magnifying-glass"></i></button>
                     </form>
                 </div>
-                {% if search_text %}
+
                 <div class="mb-3">
-                    <span class="text-muted">Results for search: "<i>{{ search_text }}</i>"</span>
+                    {% if search_text %}
+                    <div class="col-md-6 col-lg-4 mb-3 text-end">
+                        <a class="ms-3" href="{% if club %}/{% else %}/events{% endif %}"><i class="fa-solid fa-xmark"></i> Reset search</a>
+                    </div>
+                    <span class="text-muted">Results for search: "<i>{{ search_text }}</i>" </span>
+                    {% endif %}
+                    {% if year %}
+                    <div class="mb-3">
+                        <span class="text-muted">Filtered for {% if month %}{{ month_names|index:month }}{% endif %} {{ year }}</span>
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
                 {% if years %}
                 <div class="mb-3">
                     <div class="row" style="text-wrap: balance">

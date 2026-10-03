@@ -255,7 +255,7 @@
 {% endblock sub_sub_content %}
 
 {% block extra_body %}
-    <script src="{% static 'scripts/load-local-variables.js' %}?v=2023112700"
+    <script src="{% static 'scripts/load-local-variables.js' %}{{ engine_version_static_cache_buster }}"
             data-api-base-url="{% host_url 'api_doc' host 'api' %}"
             data-event-id="{{ event.aid }}"
             data-club-id="{{ club.aid }}"
