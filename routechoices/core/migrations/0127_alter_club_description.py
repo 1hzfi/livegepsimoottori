@@ -37,5 +37,5 @@ class Migration(migrations.Migration):
                 help_text="This text will be displayed on the club site frontpage, use markdown formatting",
             ),
         ),
-        migrations.RunPython(forwards_func, lambda *: ...),
+        migrations.RunPython(forwards_func, lambda *_: ...),
     ]
