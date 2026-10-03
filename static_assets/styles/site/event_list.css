@@ -63,3 +63,12 @@
 			0 0 160px #00d4ff;
 	}
 }
+
+.rc-club-w-banner {
+	background-image:
+		linear-gradient(0deg, var(--rc-color-to-trans2), var(--rc-color-to-trans2)),
+		var(--rc--club-banner-url);
+	background-color: var(--bs-secondary-bg);
+	background-size: cover;
+	background-position: center;
+}

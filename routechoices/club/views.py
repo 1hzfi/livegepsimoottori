@@ -64,11 +64,19 @@ def club_favicon(request, icon_name):
 
 def club_logo(request, extension=None):
     club_slug = request.club_slug
-    club = get_object_or_404(
-        Club.objects.exclude(logo="").only("logo", "name", "domain", "slug"),
-        slug__iexact=club_slug,
-        logo__isnull=False,
+    club = (
+        Club.objects.filter(
+            slug__iexact=club_slug,
+        )
+        .only("logo", "name", "domain", "slug")
+        .first()
     )
+    if not club.logo:
+        with open(
+            f"{settings.BASE_DIR}/static_assets/img/club-default.png", "rb"
+        ) as fp:
+            data = fp.read()
+            return StreamingHttpRangeResponse(request, data, content_type="image/png")
 
     if club.domain and not request.use_cname:
         return redirect(club.logo_url)
