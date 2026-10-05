@@ -1,10 +1,9 @@
 import csv
 import json
-import math
-import re
 from copy import deepcopy
 from datetime import timedelta
 from io import StringIO
+
 import arrow
 import slugify
 from allauth.account.adapter import get_adapter
@@ -30,11 +29,11 @@ from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
 from django_hosts.resolvers import reverse
 from hijack.views import ReleaseUserView
-from invitations.forms import InviteForm
 from kagi.views.backup_codes import BackupCodesView
 from oauth2_provider.models import AccessToken
 from user_sessions.views import SessionDeleteOtherView
 
+from invitations.forms import InviteForm
 from routechoices.api.views import device_ownership_api_view
 from routechoices.core.models import (
     PRIVACY_SECRET,
@@ -1676,20 +1675,18 @@ def quick_event(request):
         start_date = now()
         date_str = start_date.strftime("%Y-%m-%d")
         name = f"{username}"
-        slug = slugify.slugify(
-            f"{date_str} {username} {short_random_slug()}"
-        )
+        slug = slugify.slugify(f"{date_str} {username} {short_random_slug()}")
         duration = min(
             int(request.POST.get("duration", 60)), 360
         )  # Default 1 hour, max 5Hours
         end_date = start_date + timedelta(minutes=duration)
         backdrop = request.POST.get("backdrop", "osm")
-    
+
         bundle, _ = EventSet.objects.get_or_create(
             name=f"{name} {date_str}",
             club=club,
         )
-        
+
         # rate limit
         course_in_last_24h = Event.objects.filter(
             club=club,
@@ -1698,12 +1695,12 @@ def quick_event(request):
         )
         if rate_limit_triggered := course_in_last_24h.exists():
             messages.error(request, "You can have only one personal tracking per day")
-        
+
         device_id = request.POST.get("device_id")
         device = Device.objects.filter(virtual=False, aid=device_id).first()
         if not device:
             messages.error(request, "Tracker not found")
-        
+
         if device and not rate_limit_triggered:
             user_trackings_competitors = Competitor.objects.filter(
                 user=request.user,

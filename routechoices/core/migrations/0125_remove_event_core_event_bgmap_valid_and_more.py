@@ -6,21 +6,72 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0124_sosalert'),
+        ("core", "0124_sosalert"),
     ]
 
     operations = [
         migrations.RemoveConstraint(
-            model_name='event',
-            name='core_event_bgmap_valid',
+            model_name="event",
+            name="core_event_bgmap_valid",
         ),
         migrations.AlterField(
-            model_name='event',
-            name='backdrop_map',
-            field=models.CharField(choices=[('blank', 'Blank'), ('osm', 'Open Street Map'), ('gmap-street', 'Google Map Street'), ('gmap-hybrid', 'Google Map Satellite'), ('gmap-terrain', 'Google Map Terrain'), ('mapant-ee', 'Mapant Estonia'), ('mapant-fi', 'Mapant Finland'), ('mapant-fr', 'Mapant France'), ('mapant-no', 'Mapant Norway'), ('mapant-es', 'Mapant Spain'), ('mapant-se', 'Mapant Sweden'), ('mapant-ch', 'Mapant Switzerland'), ('topo-fi', 'Topo Finland'), ('topo-fr', 'Topo France'), ('topo-no', 'Topo Norway'), ('topo-uk', 'Topo UK'), ('topo-world', 'Topo World (OpenTopo)'), ('topo-world-alt', 'Topo World (ArcGIS)')], default='blank', max_length=16, verbose_name='Background map'),
+            model_name="event",
+            name="backdrop_map",
+            field=models.CharField(
+                choices=[
+                    ("blank", "Blank"),
+                    ("osm", "Open Street Map"),
+                    ("gmap-street", "Google Map Street"),
+                    ("gmap-hybrid", "Google Map Satellite"),
+                    ("gmap-terrain", "Google Map Terrain"),
+                    ("mapant-ee", "Mapant Estonia"),
+                    ("mapant-fi", "Mapant Finland"),
+                    ("mapant-fr", "Mapant France"),
+                    ("mapant-no", "Mapant Norway"),
+                    ("mapant-es", "Mapant Spain"),
+                    ("mapant-se", "Mapant Sweden"),
+                    ("mapant-ch", "Mapant Switzerland"),
+                    ("topo-fi", "Topo Finland"),
+                    ("topo-fr", "Topo France"),
+                    ("topo-no", "Topo Norway"),
+                    ("topo-uk", "Topo UK"),
+                    ("topo-world", "Topo World (OpenTopo)"),
+                    ("topo-world-alt", "Topo World (ArcGIS)"),
+                ],
+                default="blank",
+                max_length=16,
+                verbose_name="Background map",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='event',
-            constraint=models.CheckConstraint(condition=models.Q(('backdrop_map__in', ('blank', 'osm', 'gmap-street', 'gmap-hybrid', 'gmap-terrain', 'mapant-ee', 'mapant-fi', 'mapant-fr', 'mapant-no', 'mapant-es', 'mapant-se', 'mapant-ch', 'topo-fi', 'topo-fr', 'topo-no', 'topo-uk', 'topo-world', 'topo-world-alt'))), name='core_event_bgmap_valid'),
+            model_name="event",
+            constraint=models.CheckConstraint(
+                condition=models.Q(
+                    (
+                        "backdrop_map__in",
+                        (
+                            "blank",
+                            "osm",
+                            "gmap-street",
+                            "gmap-hybrid",
+                            "gmap-terrain",
+                            "mapant-ee",
+                            "mapant-fi",
+                            "mapant-fr",
+                            "mapant-no",
+                            "mapant-es",
+                            "mapant-se",
+                            "mapant-ch",
+                            "topo-fi",
+                            "topo-fr",
+                            "topo-no",
+                            "topo-uk",
+                            "topo-world",
+                            "topo-world-alt",
+                        ),
+                    )
+                ),
+                name="core_event_bgmap_valid",
+            ),
         ),
     ]
