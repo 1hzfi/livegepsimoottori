@@ -1,6 +1,5 @@
 import subprocess
 
-from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from routechoices.core.management.commands.ssl import write_nginx_conf
