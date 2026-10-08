@@ -350,4 +350,5 @@ THUMBNAIL_URL_TEMPLATE = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 try:
     from .settings_overrides import *
 except ImportError:
-    pass
+    print("Loading settings overrides")
+    ...
