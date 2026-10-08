@@ -14,7 +14,7 @@ InvitationAdminChangeForm = get_invitation_admin_change_form()
 class InvitationAdmin(admin.ModelAdmin):
     list_display = ("email", "club", "sent", "accepted")
     raw_id_fields = ("inviter",)
-    actions = ["resend"]
+    actions = ("resend", )
 
     def get_form(self, request, obj=None, **kwargs):
         if obj:
