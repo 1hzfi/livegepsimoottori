@@ -60,121 +60,136 @@
     <div class="container content">
         <div class="row">
             {% if not event.could_display_maps %}
-                <div class="text-center">
-                    <h3>Export is not available yet...</h3>
-                </div>
+            <div class="text-center">
+                <h3>Export is not available yet...</h3>
+            </div>
             {% else %}
-                {% if event.map_id or event.competitors.all %}
-                <h4 class="padded-multiline mb-4">
-                    <span>Download</span>
-                </h4>
-                <div class="mb-3">
-                    <a href="{{ event.club.nice_url }}{{ event.slug }}/zip"
-                       class="btn btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> Download all data</a>
-                </div>
-                {% if event.map_id %}
-                <h4 class="padded-multiline mb-4">
-                    <span>Analysis</span>
-                </h4>
-                <div class="mb-3">
-                    <a href="https://2d.routegadget.net/#routechoices={{ event.get_absolute_url }}" class="btn btn-primary mb-1 me-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> Routegadget</a>
-                </div>
-                {% endif %}
-                {% endif %}
-                {% if event.map_id and event.ended and event.privacy != "private" %}
-                    <hr/>
-                    <div class="mb-3">
-                        <form class="row g-3" id="two-d-rerun-export-form">
-                            <input type="hidden" name="api_root" value="{% host_url 'api_doc' host 'api' %}"/>
-                            <input type="hidden" name="event_id" value="{{ event.aid }}"/>
-                            <div class="col-auto">
-                                <label for="map_idx" class="visually-hidden">Map</label>
-                                <select name="map_idx" id="map_idx" class="form-select">
-                                    <option value="1">{% if event.map_title %}{{ event.map_title }}{% else %}Main map{% endif %}</option>
-                                    {% for map in event.map_assignations.all %}
-                                        <option value="{{ forloop.counter|add:1 }}">{{ map.title }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            {% if event.categories %}
-                            <div class="col-auto">
-                                <label for="tag" class="visually-hidden">Category</label>
-                                <select name="tag" id="tag" class="form-select">
-                                    <option value="">All categories</option>
-                                    {% for tag in event.categories %}
-                                        <option value="{{ tag }}">{{ tag }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            {% endif %}
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i> 2Drerun Analysis</button>
-                            </div>
-                        </form>
+            {% if event.map_id or event.competitors.exists %}
+            <h4 class="padded-multiline mb-4">
+                <span>Download</span>
+            </h4>
+            <div class="mb-3">
+                <a href="{{ event.club.nice_url }}{{ event.slug }}/zip"
+                    class="btn btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> Download all data</a>
+            </div>
+
+            {% if event.map_id %}
+            <hr/>
+            <div class="mb-3">
+                <form class="row g-3" id="map-export-form">
+                    <input type="hidden" name="api_root" value="{% host_url 'api_doc' host 'api' %}"/>
+                    <input type="hidden" name="event_id" value="{{ event.aid }}"/>
+                    <div class="col-auto">
+                        <label for="map_idx" class="visually-hidden">Map</label>
+                        <select name="map_idx" id="map_idx" class="form-select">
+                            <option value="1">{% if event.map_title %}{{ event.map_title }}{% else %}Main map{% endif %}</option>
+                            {% for map in event.map_assignations.all %}
+                                <option value="{{ forloop.counter|add:1 }}">{{ map.title }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                {% endif %}
-                {% if event.map_id %}
-                    <h4 class="padded-multiline mt-4">
-                        <span>Maps</span>
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-sm-6 col-md-3 mb-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        {% if event.map_title %}
-                                            {{ event.map_title }}
-                                        {% else %}
-                                            Main map
-                                        {% endif %}
-                                    </h5>
-                                    <a href="{{ event.club.nice_url }}{{ event.slug }}/map"
-                                       class="btn btn-sm btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> Image</a>
-                                    <a href="{{ event.club.nice_url }}{{ event.slug }}/kmz"
-                                       class="btn btn-sm btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> KMZ</a>
-                                </div>
-                            </div>
-                        </div>
-                        {% for map in event.map_assignations.all %}
-                            <div class="col-12 col-sm-6 col-md-3 mb-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ map.title }}</h5>
-                                        <a href="{{ event.club.nice_url }}{{ event.slug }}/map-{{ forloop.counter|add:1 }}"
-                                           class="btn btn-sm btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> Image</a>
-                                        <a href="{{ event.club.nice_url }}{{ event.slug }}/kmz-{{ forloop.counter|add:1 }}"
-                                           class="btn btn-sm btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> KMZ</a>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary" name="map-image"><i class="fa-solid fa-cloud-arrow-down"></i> Map Image</i></span></button>
+                        <button type="submit" class="btn btn-primary ms-2" name="map-kmz"><i class="fa-solid fa-cloud-arrow-down"></i> KMZ</i></button>
                     </div>
-                {% endif %}
-                {% if event.competitors.all and event.started %}
-                    <h4 class="padded-multiline">
-                        <span>Competitors</span>
-                    </h4>
-                    <div class="row">
-                        {% for competitor in event.competitors.all %}
-                            <div class="col-12 col-sm-6 col-md-3 mb-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ competitor.name }}</h5>
-                                        <a href="{{ competitor.get_absolute_gpx_url }}"
-                                           class="btn btn-sm btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> GPX</a>
-                                        {% if event.map and event.privacy != "private" %}
-                                            <a href="https://mapdump.com/new#title={{ event.name|urlencode }}&kmz=https:{% host_url 'event_map_download_with_format' event_id=event.aid extension='kmz' index=1 host 'api' %}&gpx=https:{% host_url 'competitor_gpx_download' competitor_id=competitor.aid host 'api' %}"
-                                               class="btn btn-sm btn-primary mb-1"
-                                               target="_blank"
-                                               rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> MapDump.com</a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                </form>
+            </div>
             {% endif %}
+            {% if event.competitors.exists %}
+            <hr/>
+            <div class="mb-3">
+                <form class="row g-3" id="gpx-export-form">
+                    <input type="hidden" name="api_root" value="{% host_url 'api_doc' host 'api' %}"/>
+                    <div class="col-auto">
+                        <label for="runner" class="visually-hidden">Category</label>
+                        <select name="runner" id="tag" class="form-select">
+                            {% for runner in event.competitors.all %}
+                                <option value="{{ runner.aid }}">{{ runner.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-cloud-arrow-down"></i> GPX File</button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+            {% endif %}
+            {% if event.map_id and event.competitors.exists %}
+            <h4 class="padded-multiline mb-4">
+                <span>Analysis</span>
+            </h4>
+            <div class="mb-3">
+                <a href="https://2d.routegadget.net/#routechoices={{ event.get_absolute_url }}" class="btn btn-primary mb-1 me-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> 2D.routegadget.net</a>
+            </div>
+            {% endif %}
+            {% if event.map_id and event.ended and event.privacy != "private" %}
+                <hr/>
+                <div class="mb-3">
+                    <form class="row g-3" id="two-d-rerun-export-form">
+                        <input type="hidden" name="api_root" value="{% host_url 'api_doc' host 'api' %}"/>
+                        <input type="hidden" name="event_id" value="{{ event.aid }}"/>
+                        <div class="col-auto">
+                            <label for="map_idx" class="visually-hidden">Map</label>
+                            <select name="map_idx" id="map_idx" class="form-select">
+                                <option value="1">{% if event.map_title %}{{ event.map_title }}{% else %}Main map{% endif %}</option>
+                                {% for map in event.map_assignations.all %}
+                                    <option value="{{ forloop.counter|add:1 }}">{{ map.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if event.categories %}
+                        <div class="col-auto">
+                            <label for="tag" class="visually-hidden">Category</label>
+                            <select name="tag" id="tag" class="form-select">
+                                <option value="">All categories</option>
+                                {% for tag in event.categories %}
+                                    <option value="{{ tag }}">{{ tag }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i> 3drerun.worldofo.com</button>
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+            {% if event.map_id and event.ended and event.privacy != "private" and event.competitors.count %}
+                <hr/>
+                <div class="mb-3">
+                    <form class="row g-3" id="mapdump-export-form">
+                        <input type="hidden" name="api_root" value="{% host_url 'api_doc' host 'api' %}"/>
+                        <input type="hidden" name="event_id" value="{{ event.aid }}"/>
+                        <input type="hidden" name="title" value="{% if event.event_set %}{{ event.event_set.name }} - {% endif %}{{ event.name }}"/>
+                        <div class="col-auto">
+                            <label for="map_idx" class="visually-hidden">Map</label>
+                            <select name="map_idx" id="map_idx" class="form-select">
+                                <option value="1">{% if event.map_title %}{{ event.map_title }}{% else %}Main map{% endif %}</option>
+                                {% for map in event.map_assignations.all %}
+                                    <option value="{{ forloop.counter|add:1 }}">{{ map.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if event.categories %}
+                        <div class="col-auto">
+                            <label for="runner" class="visually-hidden">Category</label>
+                            <select name="runner" class="form-select">
+                                {% for runner in event.competitors.all %}
+                                    <option value="{{ runner.aid }}">{{ runner.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i> MapDump.com</button>
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+
+
         </div>
     </div>
 {% endblock contentup %}
