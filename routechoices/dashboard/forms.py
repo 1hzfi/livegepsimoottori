@@ -1181,8 +1181,8 @@ class CompetitorUploadGPSForm(Form):
     competitor_aid = ChoiceField(required=True, choices=[], label="Competitor")
     gpx_file = FileField(
         max_length=255,
-        validators=[FileExtensionValidator(allowed_extensions=["gpx"])],
-        label="GPS File (GPX, TCX or FIT)",
+        validators=[FileExtensionValidator(allowed_extensions=["gpx", "tcx", "fit"])],
+        label="GPS File",
     )
 
     def __init__(self, *args, **kwargs):
