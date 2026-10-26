@@ -107,18 +107,29 @@ def rastilippu_webhook(request):
             irma_id = data["irma_id"]
             event_uuid = data["uuid"]
             start_date_raw = data["start_datetime"]
-            end_date_raw = data["end_datetime"]
             course_id_set = set(data["courses"])
         except KeyError:
             raise BadRequest("Missing data")
-
         try:
-            start_date = arrow.get(start_date_raw).datetime
-            end_date = arrow.get(end_date_raw).datetime
-            if end_date <= start_date:
-                raise Exception("Start should be before end")
-        except Exception:
-            raise BadRequest("Invalid dates")
+            start_date = arrow.get(start_date_raw)
+        except ValueError:
+            raise BadRequest("Invalid start date")
+        # We shift the start datetime one hour before what is provided
+        start_date = start_date.shift(hours=-1)
+
+        if end_date_raw := data.get("end_datetime"):
+            try:
+                end_date = arrow.get(end_date_raw).shift(hours=1)
+            except ValueError:
+                raise BadRequest("Invalid start date")
+        else:
+            end_date = start_date.shift(hours=5)
+
+        if end_date <= start_date:
+            raise BadRequest("End of event should be after its start")
+
+        start_date = start_date.datetime
+        end_date = end_date.datetime
 
         club = Club.objects.filter(
             slug=club_slug,
@@ -260,7 +271,7 @@ def lemonsqueezy_webhook(request):
             data["data"]["attributes"].get("variant_id")
             or data["data"]["attributes"].get("first_order_item", {}).get("variant_id")
         )
-    except Exception:
+    except KeyError, ValueError:
         print("Invalid call on LemonSqueezy Webhook")
 
     # Club Upgrade

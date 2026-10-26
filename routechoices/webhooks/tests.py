@@ -353,10 +353,10 @@ class RLWebHookTestCase(EssentialApiBase):
         self.assertTrue(event_set.create_page)
         self.assertTrue(event_set.slug.startswith("turku-rastit-12-08-2026-"))
         self.assertEqual(
-            event_set.external_metadata["start_date"], "2026-08-12T13:00:00+00:00"
+            event_set.external_metadata["start_date"], "2026-08-12T12:00:00+00:00"
         )
         self.assertEqual(
-            event_set.external_metadata["end_date"], "2026-08-12T19:00:00+00:00"
+            event_set.external_metadata["end_date"], "2026-08-12T20:00:00+00:00"
         )
         self.assertEqual(
             event_set.external_metadata["uuid"], "9fd89ce9-14cf-4a4d-93b3-1c3201c75e23"
@@ -390,10 +390,10 @@ class RLWebHookTestCase(EssentialApiBase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         event_set.refresh_from_db()
         self.assertEqual(
-            event_set.external_metadata["start_date"], "2026-08-12T14:00:00+00:00"
+            event_set.external_metadata["start_date"], "2026-08-12T13:00:00+00:00"
         )
         self.assertEqual(
-            event_set.external_metadata["end_date"], "2026-08-12T19:00:00+00:00"
+            event_set.external_metadata["end_date"], "2026-08-12T20:00:00+00:00"
         )
         self.assertEqual(
             event_set.external_metadata["uuid"], "9fd89ce9-14cf-4a4d-93b3-1c3201c75e23"
@@ -562,9 +562,9 @@ class RLWebHookTestCase(EssentialApiBase):
         self.assertEqual(event_set.events.count(), 4)
         for event in event_set.events.all():
             self.assertEqual(
-                event.start_date, arrow.get("2026-08-12T14:00:00Z").datetime
+                event.start_date, arrow.get("2026-08-12T13:00:00Z").datetime
             )
-            self.assertEqual(event.end_date, arrow.get("2026-08-12T19:00:00Z").datetime)
+            self.assertEqual(event.end_date, arrow.get("2026-08-12T20:00:00Z").datetime)
 
         # Change bundle date changes all events schedules
         res = self.webhook_client.post(
@@ -594,9 +594,9 @@ class RLWebHookTestCase(EssentialApiBase):
         self.assertEqual(event_set.events.count(), 4)
         for event in event_set.events.all():
             self.assertEqual(
-                event.start_date, arrow.get("2026-08-11T14:00:00Z").datetime
+                event.start_date, arrow.get("2026-08-11T13:00:00Z").datetime
             )
-            self.assertEqual(event.end_date, arrow.get("2026-08-11T19:00:00Z").datetime)
+            self.assertEqual(event.end_date, arrow.get("2026-08-11T20:00:00Z").datetime)
 
         # Adding a course
         mock_response.json.return_value.append({"id": "abc", "name": "RR"})
