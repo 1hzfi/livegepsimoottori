@@ -1052,7 +1052,7 @@ class RegisterForm(Form):
     gps_file = FileField(
         label="GPS File",
         max_length=255,
-        help_text="Optional - GPX, FIT, or TCX File - Can be uploaded later",
+        help_text="Optional - GPX, FIT, or TCX file - Can be uploaded later",
         validators=[FileExtensionValidator(allowed_extensions=["gpx", "tcx", "fit"])],
         required=False,
     )
@@ -1183,6 +1183,7 @@ class CompetitorUploadGPSForm(Form):
         max_length=255,
         validators=[FileExtensionValidator(allowed_extensions=["gpx", "tcx", "fit"])],
         label="GPS File",
+        help_text="GPX, FIT, or TCX file",
     )
 
     def __init__(self, *args, **kwargs):
