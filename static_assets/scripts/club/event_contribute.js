@@ -34,7 +34,11 @@ function onGPXLoaded(e) {
 const onTCXLoaded = (e) => {
 	const xml = e.target.result;
 	try {
-		return parseTCXString(xml, onTCXParsed);
+		let route;
+		parseTCXString(xml, (wo) => {
+			route = onTCXParsed(wo);
+		});
+		return route;
 	} catch (e) {
 		swal({
 			text: "Error parsing your TCX file!",
@@ -54,6 +58,7 @@ const onFitLoaded = (e) => {
 		elapsedRecordField: "timer_time",
 		mode: "list",
 	});
+	let route = null;
 	fitParser.parse(e.target.result, (error, data) => {
 		if (error) {
 			swal({
@@ -77,8 +82,9 @@ const onFitLoaded = (e) => {
 				}
 			}
 		}
-		return onRouteLoaded(newRoute, missingTimeInfo);
+		route = onRouteLoaded(newRoute, missingTimeInfo);
 	});
+	return route;
 };
 
 function onRouteLoaded(newRoute, missingTimeInfo) {
@@ -246,6 +252,7 @@ function selectizeDeviceInput(field) {
 		});
 		u("#id_race_complete").trigger("change");
 		u("#id_gps_file").on("change", function () {
+			u("#id_gpx_file").removeClass("was-validated", "is-valid");
 			u("id_js_enabled").val("");
 			if (this.files.length > 0) {
 				const gpsFile = this.files[0];
@@ -275,7 +282,8 @@ function selectizeDeviceInput(field) {
 						dataTransfer.items.add(jsonFile);
 						const inputElement = document.getElementById("id_gps_file");
 						inputElement.files = dataTransfer.files;
-						u("id_js_enabled").val("on");
+						u("#id_js_enabled").val("on");
+						u("#id_gps_file").addClass("was-validated", "is-valid");
 						// Hide the Tracker ID selector
 						const selectEl = document.getElementById("id_device");
 						const control = selectEl?.tomselect;
@@ -337,6 +345,7 @@ function selectizeDeviceInput(field) {
 	if (u("#id_gpx_file").nodes.length) {
 		u("#id_gpx_file").attr("accept", ".gpx,.tcx,.fit");
 		u("#id_gpx_file").on("change", function () {
+			u("#id_gpx_file").removeClass("was-validated", "is-valid");
 			u("id_js_enabled2").val("");
 			if (this.files.length > 0) {
 				const gpsFile = this.files[0];
@@ -366,7 +375,8 @@ function selectizeDeviceInput(field) {
 						dataTransfer.items.add(jsonFile);
 						const inputElement = document.getElementById("id_gpx_file");
 						inputElement.files = dataTransfer.files;
-						u("id_js_enabled2").val("on");
+						u("#id_js_enabled2").val("on");
+						u("#id_gpx_file").addClass("was-validated", "is-valid");
 					}
 				};
 				fr[readFunction](gpsFile);

@@ -19,7 +19,7 @@ const parseTCXString = function (xmlstr, cb) {
         currentWorkout.datetime = datetime;
 
         /// Success Callback
-        cb(currentWorkout);
+        return cb(currentWorkout);
 
         currentWorkout = undefined;
       } else if (tagName === "Lap") {
