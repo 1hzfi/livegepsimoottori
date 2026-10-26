@@ -2591,14 +2591,13 @@ function RCEvent(infoURL, clockURL, locale) {
 				.getArray()
 				.filter((pos) => !Number.isNaN(pos[1]))
 				.map((pos) => [pos[1], pos[2]]);
-
 			const redraw =
 				competitor.tail && competitor.tailScale !== runnerIconScale;
-			if (redraw) {
+			if (redraw || tailLatLng.length < 2) {
 				map.removeLayer(competitor.tail);
 				competitor.tail = null;
 			}
-			if (!competitor.tail) {
+			if (!competitor.tail && tailLatLng.length >= 2) {
 				competitor.tail = L.polyline(tailLatLng, {
 					color: competitor.color,
 					opacity: 1,
@@ -2608,7 +2607,7 @@ function RCEvent(infoURL, clockURL, locale) {
 
 				competitor.tail.closestLayerPoint(new L.Point(0, 0));
 				competitor.tailScale = runnerIconScale;
-			} else {
+			} else if (tailLatLng.length >= 2) {
 				competitor.tail.setLatLngs(tailLatLng);
 			}
 			if (competitor.highlighted) {
@@ -3418,7 +3417,9 @@ function RCEvent(infoURL, clockURL, locale) {
 					redrawCompetitorMarker(competitor, loc, isIdle);
 					redrawCompetitorNametag(competitor, loc, isIdle);
 				}
-				redrawCompetitorTail(competitor, route, viewedTime);
+				if (route.getArray().length) {
+					redrawCompetitorTail(competitor, route, viewedTime);
+				}
 				if (refreshMeters) {
 					// odometer and speedometer
 					const hasPointInTail = route.hasPointInInterval(
