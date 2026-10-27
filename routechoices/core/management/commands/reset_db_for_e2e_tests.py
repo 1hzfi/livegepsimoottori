@@ -53,6 +53,15 @@ class Command(BaseCommand):
             open_registration=True,
             allow_route_upload=True,
         )
+        ev2 = Event.objects.create(
+            club=club,
+            name="Past event with open registration and upload allowed",
+            slug="open-registration-upload-allowed2",
+            start_date=arrow.get("2019-06-15T20:00:00Z").datetime,
+            end_date=arrow.now().shift(days=-3).datetime,
+            open_registration=True,
+            allow_route_upload=True,
+        )
         Event.objects.create(
             club=club,
             name="My future event with upload allowed",
@@ -76,6 +85,12 @@ class Command(BaseCommand):
             event=ev,
             name="Aatos",
             short_name="å",
+        )
+
+        Competitor.objects.create(
+            event=ev2,
+            name="Alice",
+            short_name="A",
         )
 
         FrontPageFeedback.objects.create(

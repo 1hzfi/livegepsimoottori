@@ -53,8 +53,24 @@ context("Dashboard actions", () => {
 			fileName: "HaldenSK.gpx",
 			mimeType: "text/xml",
 		});
+		cy.get("#id_gpx_file.is-valid").should("have.length", 1);
 		cy.get("button:not([type]),button[type=submit]").eq(1).click();
 		cy.contains("Upload successful!");
+		cy.visit(
+			"https://dashboard.rtchs.localhost/contribute/kimito-sk/open-registration-upload-allowed2/",
+		);
+		cy.get("#id_gpx_file").selectFile({
+			contents: "cypress/fixtures/sample.fit",
+			fileName: "HaldenSK.fit",
+			mimeType: "text/xml",
+		});
+		cy.get("#id_gpx_file.is-valid").should("have.length", 1);
+		cy.get("#id_gpx_file").selectFile({
+			contents: "cypress/fixtures/sample.tcx",
+			fileName: "HaldenSK.tcx",
+			mimeType: "text/xml",
+		});
+		cy.get("#id_gpx_file.is-valid").should("have.length", 1);
 	});
 
 	it("Participation page", () => {
