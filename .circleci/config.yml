@@ -20,7 +20,8 @@ commands:
           name: Setup environment
           command: |
             mv ./.env.dev ./.env
-            echo "SECURE_SSL_REDIRECT = False" > ./routechoices/settings_overrides.py
+            echo "COMPRESS_OFFLINE = False" > ./routechoices/settings_overrides.py
+            echo "SECURE_SSL_REDIRECT = False" >> ./routechoices/settings_overrides.py
             echo "DEBUG = False" >> ./routechoices/settings_overrides.py
 
       - run:
@@ -29,7 +30,7 @@ commands:
             ./dc up -d
             ./da migrate
             ./da collectstatic
-            ./da compress
+            ./da compress --force
             ./dc restart nginx
 
   wait-app-online:
@@ -49,11 +50,7 @@ jobs:
       - prepare-docker
       - run:
           name: Restart django
-          command: ./dc restart django
-      - wait-app-online
-      - run:
-          name: Run tests
-          command: ./test
+          command: ./bin/test python
       - codecov/upload:
           file: coverage.xml
           flags: unittests

@@ -2,7 +2,7 @@
 set -e
 
 initialise_tests() {
-    cp .env.e2e ./.env
+    cp ./.env.e2e ./.env
 
     echo "Starting test environment..."
     ./dc up -d db s3
@@ -44,28 +44,20 @@ run_e2e_tests() {
 }
 
 post_tests() {
-    cp .env.dev ./.env
+    cp ./.env.dev ./.env
     ./dc restart django
 }
 
 initialise_tests
-
-echo "Running tests..."
-
 case "${1:-all}" in
     all)
-        initialise_tests
         run_python_tests
         run_e2e_tests
-        post_tests
         ;;
     python)
-        initialise_tests
         run_python_tests
-        post_tests
         ;;
     e2e)
-        initialise_tests
         run_e2e_tests
         post_tests
 
