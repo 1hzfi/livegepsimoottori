@@ -41,7 +41,7 @@
 {% if club %}
 <div class="container-fluid p-0">
     <div class="row m-0">
-        <div class="w-100 rc-club-w-banner" style="--rc--club-banner-url: url({{ club.banner_url }});">
+        <div class="w-100 rc-club-w-banner" {% if club.banner %}style="--rc--club-banner-url: url({{ club.banner_url }});"{% endif %}>
             <div class="container content">
                 <div class="row">
                     <div>
