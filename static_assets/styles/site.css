@@ -461,11 +461,11 @@ footer {
 
 [data-bs-theme="dark"] {
 	.www-footer .nav-link {
-		color: rgba(65, 124, 65, 0.8);
+		color: rgba(65, 124, 65, 0.8) !important;
 	}
 
 	.www-footer .nav-link:hover {
-		color: rgb(65, 124, 65);
+		color: rgb(65, 124, 65) !important;
 	}
 }
 

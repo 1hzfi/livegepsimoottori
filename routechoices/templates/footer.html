@@ -1,6 +1,7 @@
 {% load compress hosts static %}
 
-<div class="{{ request.host.name }}-footer footer bg-dark text-light py-4 container-fluid">
+{% if not club %}
+<div class="www-footer footer bg-dark text-light py-4 container-fluid">
     <div class="mb-3">
         <div class="row d-flex justify-content-between">
             <div class="row d-flex">
@@ -71,7 +72,7 @@
         </div>
     </div>
 </div>
-
+{% endif %}
 <div class="container-fluid the-end">
     <div>
         <div class="row mb-0">

@@ -51,7 +51,11 @@
     <div class="container content">
         <div class="col-12">
             <div class="row">
-                {% if not request.user.is_authenticated %}
+                {% if not registration_form and not upload_form %}
+                <h2 class="mb-5">
+                    There is not contribution to be made for this event at the moment…
+                </h2>
+                {% elif not request.user.is_authenticated %}
                 <div class="alert alert-danger" role="alert">
                     You are not logged in!
                     <br />

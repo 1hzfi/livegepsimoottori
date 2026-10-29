@@ -295,7 +295,7 @@ function selectizeDeviceInput(field) {
 		});
 	}
 	// Selectize Device selector
-	{
+	if (u("#registration-form").nodes.length) {
 		const tsDevId = selectizeDeviceInput("select[name='device']");
 		const warningHTML = u("<div>")
 			.append(u("#warning-if-device-id").html())
