@@ -1,6 +1,6 @@
 {
 	"club-events-link-text": "Events by $1",
-	"no-competitors": "No competitors.",
+	"no-competitors": "No participants.",
 	"loading-text": "Loading...",
 	"event-not-started-text": "Event has not yet started.",
 	"event-not-ended-text": "Event is not over yet.",
@@ -65,7 +65,7 @@
 	"preview": "Preview",
 	"sync-start": "Synced starts",
 	"state-synced": "Synced",
-	"wait-for-data-text": "Waiting for data…",
-	"no-data-text": "No GPS data…",
+	"wait-for-data-text": "Waiting for first data from participants…",
+	"no-data-text": "No data has been uploaded by participants yet.",
 	"upload-your-route": "Upload your route"
 }

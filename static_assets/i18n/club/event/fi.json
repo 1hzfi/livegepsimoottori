@@ -65,7 +65,7 @@
 	"preview": "Ennakkokatsaus",
 	"sync-start": "Synkattu aloitus",
 	"state-synced": "Synkattu",
-	"wait-for-data-text": "Odotetaan tietoja…",
-	"no-data-text": "Ei GPS-tietoja…",
+	"wait-for-data-text": "Odotetaan ensimmäisiä tietoja osallistujilta…",
+	"no-data-text": "Osallistujat eivät ole vielä ladanneet tietoja.",
 	"upload-your-route": "Lataa reittisi"
 }

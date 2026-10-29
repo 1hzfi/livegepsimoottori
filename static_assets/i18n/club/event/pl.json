@@ -65,7 +65,7 @@
 	"preview": "Zapowiedź",
 	"sync-start": "Start synch.",
 	"state-synced": "Zsynchron.",
-	"wait-for-data-text": "Oczekiwanie na dane…",
-	"no-data-text": "Brak danych GPS…",
+	"wait-for-data-text": "Oczekiwanie na pierwsze dane od uczestników…",
+	"no-data-text": "Uczestnicy nie przesłali jeszcze żadnych danych.",
 	"upload-your-route": "Prześlij swoją trasę"
 }

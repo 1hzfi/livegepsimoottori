@@ -65,7 +65,7 @@
 	"preview": "Previa",
 	"sync-start": "Inicio sinc.",
 	"state-synced": "Sincron.",
-	"wait-for-data-text": "Esperando datos…",
-	"no-data-text": "Sin datos de GPS…",
+	"wait-for-data-text": "Esperando los primeros datos de los participantes…",
+	"no-data-text": "Los participantes aún no han subido ningún dato.",
 	"upload-your-route": "Sube tu ruta"
 }

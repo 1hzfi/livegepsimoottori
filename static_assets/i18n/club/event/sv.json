@@ -65,7 +65,7 @@
 	"preview": "Förhandsvisning",
 	"sync-start": "Synk startar",
 	"state-synced": "Synkad",
-	"wait-for-data-text": "Väntar på data…",
-	"no-data-text": "Ingen GPS-data…",
+	"wait-for-data-text": "Väntar på första data från deltagarna…",
+	"no-data-text": "Inga data har laddats upp av deltagarna än.",
 	"upload-your-route": "Ladda upp din rutt"
 }

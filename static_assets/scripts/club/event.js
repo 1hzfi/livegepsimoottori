@@ -923,10 +923,6 @@ function RCEvent(infoURL, clockURL, locale) {
 			document.getElementById("no-data-modal"),
 			{ backdrop: "static", keyboard: false },
 		);
-		waitingDataModal = new bootstrap.Modal(
-			document.getElementById("waiting-data-modal"),
-			{ backdrop: "static", keyboard: false },
-		);
 		window.addEventListener("resize", onAppResize);
 		window.addEventListener("fullscreenchange", () => {
 			onAppResize();
@@ -2446,17 +2442,16 @@ function RCEvent(infoURL, clockURL, locale) {
 					}
 				}
 				if (!hasData) {
-					const errorMessage = "Waiting for data…";
 					if (!isLiveEvent || eventEnd < clock.now()) {
-						waitingDataModal.hide();
-						noDataModal.show();
+						u("#text-waiting-gps-data").addClass("d-none");
+						u("#text-no-gps-data").removeClass("d-none").addClass("show");
 					} else {
-						noDataModal.hide();
-						waitingDataModal.show();
+						u("#text-waiting-gps-data").removeClass("d-none").addClass("show");
+						u("#text-no-gps-data").addClass("d-none");
 					}
 				} else {
-					waitingDataModal.hide();
-					noDataModal.hide();
+					u("#text-waiting-gps-data").addClass("d-none");
+					u("#text-no-gps-data").addClass("d-none");
 					u("#loading-modal").remove();
 				}
 
@@ -3583,7 +3578,8 @@ function RCEvent(infoURL, clockURL, locale) {
 	updateText(locale).then(() => {
 		u("#export-text").text(banana.i18n("export"));
 		u("#no-data-text").text(banana.i18n("no-data-text"));
-		u("#wait-for-data-text").text(banana.i18n("wait-for-data-text"));
+		u(".text-waiting-gps-data-content").text(banana.i18n("wait-for-data-text"));
+		u(".text-no-gps-data-content").text(banana.i18n("no-data-text"));
 		u(".upload-link-verbose").text(banana.i18n("upload-your-route"));
 
 		u("#event-start-list-link").text(banana.i18n("start-list"));
