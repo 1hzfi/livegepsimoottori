@@ -811,7 +811,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		const verZoom = map.getBoundsZoom(verBounds);
 		const horZoom = map.getBoundsZoom(horBounds);
 		const newBounds =
-			verZoom > horZoom ? L.latLngBounds(verBounds) : L.latLngBounds(horBounds);
+			verZoom < horZoom ? L.latLngBounds(verBounds) : L.latLngBounds(horBounds);
 		map.fitBounds(newBounds, { animate: false });
 	}
 
