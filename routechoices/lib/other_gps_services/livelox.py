@@ -1,4 +1,3 @@
-import base64
 import bisect
 import json
 import math
@@ -48,9 +47,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
         "content-type": "application/json",
         "X-Requested-With": "XMLHttpRequest",
     }
-    hashstr = base64.b64decode(
-        "UGxlYXNlIHBsYXkgZmFpciBhbmQgcmVzcGVjdCBvdXIgVXNlciBBZ3JlZW1lbnQuIFNjcmFwaW5nIGFuZCByZXZlcnNlIGVuZ2luZWVyaW5nIGFyZSBub3QgcGVybWl0dGVkLg=="
-    ).decode()
+    hashstr = ""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
