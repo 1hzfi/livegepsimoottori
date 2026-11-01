@@ -27,6 +27,11 @@ const backdropMaps = {
 		attribution: "Map data &copy; National Land Survey of Finland",
 		className: "wms256",
 		layers: "peruskartta",
+		bounds: [
+			[59.5, 19.0],
+			[70.0, 32.0],
+		],
+		minNativeZoom: 6,
 	}),
 	"mapant-ee": L.tileLayer(
 		"https://tiles.routechoices.com/proxy/ee/{z}/{x}/{y}.webp",
@@ -34,6 +39,11 @@ const backdropMaps = {
 			attribution:
 				"Map data &copy; mapantee.gokartor.se and Estonian Land Board",
 			className: "wms256",
+			bounds: [
+				[57.0, 21.0],
+				[61.0, 29.0],
+			],
+			minNativeZoom: 6,
 		},
 	),
 	"mapant-fi": L.tileLayer(
@@ -42,6 +52,12 @@ const backdropMaps = {
 			attribution:
 				"Map data &copy; MapAnt.fi and National Land Survey of Finland",
 			className: "wms256",
+			bounds: [
+				[59.5, 19.0],
+				[70.0, 32.0],
+			],
+			minNativeZoom: 6,
+			maxNativeZoom: 17,
 		},
 	),
 	"topo-no": L.tileLayer(
@@ -49,6 +65,11 @@ const backdropMaps = {
 		{
 			attribution: "Map data &copy; kartverket.no",
 			className: "wms256",
+			bounds: [
+				[57.0, 4.0],
+				[72.0, 32.0],
+			],
+			minNativeZoom: 6,
 		},
 	),
 	"topo-uk": L.tileLayer(
@@ -56,7 +77,7 @@ const backdropMaps = {
 		{
 			attribution: "Map data &copy; Ordnance Survey",
 			className: "wms256",
-			minZoom: 7,
+			minNativeZoom: 7,
 			maxNativeZoom: 15,
 			bounds: [
 				[49.75, -9.01],
@@ -67,12 +88,22 @@ const backdropMaps = {
 	"mapant-no": L.tileLayer("https://mapant.no/osm-tiles/{z}/{x}/{y}.png", {
 		attribution: "Map data &copy; MapAnt.no",
 		className: "wms256",
+		bounds: [
+			[57.0, 4.0],
+			[72.0, 32.0],
+		],
+		minNativeZoom: 6,
 	}),
 	"mapant-ch": L.tileLayer(
 		"https://tiles.routechoices.com/proxy/ch/{z}/{x}/{y}.webp",
 		{
 			attribution: "Map data &copy; MapAnt.ch",
 			className: "wms256",
+			bounds: [
+				[45.0, 5.0],
+				[48.0, 11.0],
+			],
+			minNativeZoom: 7,
 		},
 	),
 	"mapant-fr": L.tileLayer(
@@ -81,6 +112,11 @@ const backdropMaps = {
 			attribution: "Map data &copy; MapAnt.fr",
 			className: "wms256",
 			maxNativeZoom: 17,
+			minNativeZoom: 7,
+			bounds: [
+				[41.0, -5.0],
+				[51.0, 10.0],
+			],
 		},
 	),
 	"mapant-se": L.tileLayer(
@@ -88,6 +124,11 @@ const backdropMaps = {
 		{
 			attribution: "Map data &copy; gokartor.se",
 			className: "wms256",
+			bounds: [
+				[55.0, 10.0],
+				[70.0, 25.0],
+			],
+			minNativeZoom: 6,
 		},
 	),
 	"topo-fr": L.tileLayer(
@@ -97,6 +138,7 @@ const backdropMaps = {
 				'Map data <a href="https://www.ign.fr/" target="_blank">&copy; IGN France</a>',
 			className: "wms256",
 			maxNativeZoom: 16,
+			minNativeZoom: 6,
 		},
 	),
 	"mapant-es": L.tileLayer.wms("https://mapant.es/wms", {
@@ -106,6 +148,11 @@ const backdropMaps = {
 		transparent: true,
 		attribution: "Map data &copy; MapAnt.es",
 		className: "wms256",
+		minNativeZoom: 6,
+		bounds: [
+			[36.0, -10.0],
+			[44.0, 5.0],
+		],
 	}),
 	"topo-world": L.tileLayer("https://tile.opentopomap.org/{z}/{x}/{y}.png", {
 		attribution: "Map data &copy; OpenTopoMap (CC-BY-SA)",
