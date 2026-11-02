@@ -1015,6 +1015,8 @@ def event_create_view(request):
     for competitor_form in competitors_formset.forms:
         competitor_form.fields["device"].queryset = devices_qs
         competitor_form.fields["device"].choices = devices_choices
+    
+    form.fields["event_set"].empty_label = ""
 
     return render(
         request,

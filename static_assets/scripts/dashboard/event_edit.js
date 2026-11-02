@@ -473,8 +473,8 @@ function onCsvParsed(result) {
 	});
 
 	new TomSelect("#id_event_set", {
-		allowEmptyOption: true,
-		placeholder: "Type to search a bundle or create a new one",
+		allowEmptyOption: false,
+		placeholder: "Search or create a bundle",
 		render: {
 			option_create: (data, escapeFunc) =>
 				`<div class="create">Create <strong>${escapeFunc(data.input)}</strong>&hellip;</div>`,
@@ -840,7 +840,7 @@ function onCsvParsed(result) {
 			"id_send_interval",
 			"id_tail_length",
 			"id_emergency_contacts",
-			"announcement_form > h3",
+			"id_announcement",
 			"id_backdrop_map",
 			"id_geojson_layer",
 			"id_map_title",
