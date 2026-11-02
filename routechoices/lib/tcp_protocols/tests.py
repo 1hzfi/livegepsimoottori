@@ -252,9 +252,12 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
     async def test_codec8(self):
         init_data = bytes.fromhex("000f333536333037303432343431303133")
         ack_data = b"\x01"
-        gps_data = bytes.fromhex(
-            "00000000000000FE080400000113fc208dff000f33353633303730343234343130313304030101150316030001460000015d0000000113fc17610b000f14ffe0209cc580006e00c00500010004030101150316010001460000015e0000000113fc284945000f150f00209cd200009501080400000004030101150016030001460000015d0000000113fc267c5b000f150a50209cccc0009300680400000004030101150016030001460000015b0004"
+        gps_data = (
+            "00000000000000FE080400000113fc208dff000f33353633303730343234343130313304030101150316030001460000015d0000000113fc17610b000f14ffe0209cc580006e00c00500010004030101150316010001460000015e0000000113fc284945000f150f00209cd200009501080400000004030101150016030001460000015d0000000113fc267c5b000f150a50209cccc0009300680400000004030101150016030001460000015b0004",
+            "00000000000000a28e03000001a19bf0a5da000d57cf4023ff5e2d0022009d15000000710004000300712d00f0000640000000000103200000138300000000000001a19bf0a5d0000d57cf4023ff5e2d0022009d15000000000004000300713200f0000640000000000103200000138300000000000001a19bf0a1f2000d57cf3f23ff5e280022009d15000000710004000300713200f0000640000000000103200000138300000000030000f3da",
         )
+        battery_data = [None, 50]
+        nb_data = [4, 6]
 
         server = client = None
         device = await create_imei_device("356307042441013")
@@ -266,10 +269,12 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
         await client.write(init_data)
         data = await client.read_bytes(255, partial=True)
         self.assertEqual(data, ack_data)
-        await client.write(gps_data)
-        await asyncio.sleep(0.05)
-        device = await refresh_device(device)
-        self.assertEqual(device.location_count, 4)
+        for batt, d, nb in zip(battery_data, gps_data, nb_data):
+            await client.write(bytes.fromhex(d))
+            await asyncio.sleep(0.05)
+            device = await refresh_device(device)
+            self.assertEqual(device.location_count, nb)
+            self.assertEqual(device.battery_level, batt)
         if server is not None:
             server.stop()
         if client is not None:

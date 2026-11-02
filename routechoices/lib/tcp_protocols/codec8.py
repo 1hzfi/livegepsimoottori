@@ -1,3 +1,4 @@
+from io import BytesIO
 from struct import pack, unpack
 
 from tornado.iostream import StreamClosedError
@@ -9,6 +10,12 @@ from routechoices.lib.tcp_protocols.commons import (
     add_locations,
     send_sos,
 )
+
+
+def read_ext_bytes(buffer, codec, codecs):
+    if codec in codecs:
+        return unpack(">H", buffer.read(2))[0]
+    return buffer.read(1)[0]
 
 
 class TMT250Decoder:
@@ -25,85 +32,83 @@ class TMT250Decoder:
     def decode_alv(self, data):
         self.packet["zeroes"] = unpack(">i", data[:4])[0]
         if self.packet["zeroes"] != 0:
-            raise Exception("zeroes should be 0")
+            raise ValueError("zeroes should be 0")
+
         self.packet["length"] = unpack(">i", data[4:8])[0]
+
         self.packet["codec"] = data[8]
-        if self.packet["codec"] not in (8, 0x8E):
-            raise Exception("codec should be 08 or 8e")
+
+        if self.packet["codec"] not in (0x08, 0x8E):
+            raise ValueError("codec should be 0x08 or 0x8E")
+
         if self.packet["codec"] == 0x8E:
             self.extended = True
+
         self.packet["num_data"] = data[9]
-        self.extract_records(data)
+        buffer = BytesIO(data[10:])
+        self.packet["records"] = []
+        for _ in range(self.packet["num_data"]):
+            self.extract_records(buffer)
         return self.packet
 
     def extract_records(self, buffer):
-        remaining_data = self.packet["num_data"]
-        self.packet["records"] = []
-        pointer = 10
         self.alarm_triggered = False
-        while remaining_data > 0:
-            timestamp = unpack(">Q", buffer[pointer : pointer + 8])[0] / 1e3
-            lon = unpack(">i", buffer[pointer + 9 : pointer + 13])[0] / 1e7
-            lat = unpack(">i", buffer[pointer + 13 : pointer + 17])[0] / 1e7
-            pointer += 26
-            if self.extended:
-                pointer += 2
-            n1 = buffer[pointer]
-            if self.extended:
-                pointer += 1
-                n1 = (n1 << 8) + buffer[pointer]
-            pointer += 1
-
-            for _ in range(n1):
-                avl_id = buffer[pointer]
-                if self.extended:
-                    pointer += 1
-                    avl_id = (avl_id << 8) + buffer[pointer]
-                pointer += 1
+        global_mask = 0x0F
+        timestamp = unpack(">Q", buffer.read(8))[0] / 1e3
+        buffer.read(1)  # priority
+        lon = unpack(">i", buffer.read(4))[0] / 1e7
+        lat = unpack(">i", buffer.read(4))[0] / 1e7
+        buffer.read(2)  # alt
+        buffer.read(2)  # angle
+        buffer.read(1)  # satellites
+        buffer.read(2)  # speed
+        read_ext_bytes(buffer, self.packet["codec"], (0x8E,))
+        read_ext_bytes(buffer, self.packet["codec"], (0x8E,))  # total io data
+        read_data = 0
+        if global_mask & 0x01:
+            cnt = read_ext_bytes(buffer, self.packet["codec"], (0x8E,))
+            for _ in range(cnt):
+                avl_id = read_ext_bytes(buffer, self.packet["codec"], (0x8E,))
                 if avl_id == 113:
-                    self.battery_level = buffer[pointer]
-                if avl_id == 236:
-                    self.alarm_triggered = buffer[pointer]
-                pointer += 1
-            n2 = buffer[pointer]
-            if self.extended:
-                pointer += 1
-                n2 = (n2 << 8) + buffer[pointer]
-            pointer += 1 + 3 * n2
-            if self.extended:
-                pointer += n2
+                    self.battery_level = buffer.read(1)[0]
+                elif avl_id == 236:
+                    self.alarm_triggered = buffer.read(1)[0] > 0
+                else:
+                    buffer.read(1)
+                read_data += 1
+        if global_mask & 0x02:
+            cnt = read_ext_bytes(buffer, self.packet["codec"], (0x8E,))
+            for _ in range(cnt):
+                avl_id = read_ext_bytes(buffer, self.packet["codec"], (0x8E,))
+                buffer.read(2)
+                read_data += 1
+        if global_mask & 0x04:
+            cnt = read_ext_bytes(buffer, self.packet["codec"], (0x8E,))
+            for _ in range(cnt):
+                avl_id = read_ext_bytes(buffer, self.packet["codec"], (0x8E,))
+                buffer.read(4)
+                read_data += 1
 
-            n4 = buffer[pointer]
-            if self.extended:
-                pointer += 1
-                n4 = (n4 << 8) + buffer[pointer]
-            pointer += 1 + 5 * n4
-            if self.extended:
-                pointer += n4
-            n8 = buffer[pointer]
-            if self.extended:
-                pointer += 1
-                n8 = (n8 << 8) + buffer[pointer]
-            pointer += 1 + 9 * n8
-            if self.extended:
-                pointer += n8
+        cnt = read_ext_bytes(buffer, self.packet["codec"], (0x8E,))
+        for _ in range(cnt):
+            avl_id = read_ext_bytes(buffer, self.packet["codec"], (0x8E,))
+            buffer.read(8)
+            read_data += 1
 
-            if self.extended:
-                nx = (buffer[pointer] << 8) + buffer[pointer + 1]
-                pointer += 2
-                for i in range(nx):
-                    pointer += 2
-                    len_nxi = (buffer[pointer] << 8) + buffer[pointer + 1]
-                    pointer += len_nxi
+        if self.extended:
+            cnt = read_ext_bytes(buffer, self.packet["codec"], (0x8E,))
+            for _ in range(cnt):
+                avl_id = unpack(">H", buffer.read(2))[0]
+                length = unpack(">H", buffer.read(2))[0]
+                buffer.read(length)
+                read_data += 1
 
-            self.packet["records"].append(
-                {
-                    "timestamp": timestamp,
-                    "latlon": [lat, lon],
-                }
-            )
-            remaining_data -= 1
-        return pointer
+        self.packet["records"].append(
+            {
+                "timestamp": timestamp,
+                "latlon": [lat, lon],
+            }
+        )
 
 
 class Codec8Connection(GenericConnection):
@@ -143,10 +148,11 @@ class Codec8Connection(GenericConnection):
             try:
                 data = bytearray(b"\x00" * 2048)
                 data_len = await self.stream.read_into(data, partial=True)
+                data = data[:data_len]
                 if self.imei:
                     self.logger.info(
                         f"CODEC8 DATA, {self.aid}, {self.address}, {self.imei}: "
-                        f"{safe64encode(bytes(data[:data_len]))}"
+                        f"{safe64encode(bytes(data))}"
                     )
 
                 if data_len == 1 and data[0] == b"\xff":
