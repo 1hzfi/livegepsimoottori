@@ -474,6 +474,7 @@ function onCsvParsed(result) {
 
 	new TomSelect("#id_event_set", {
 		allowEmptyOption: true,
+		placeholder: "Type to search a bundle or create a new one",
 		render: {
 			option_create: (data, escapeFunc) =>
 				`<div class="create">Create <strong>${escapeFunc(data.input)}</strong>&hellip;</div>`,
