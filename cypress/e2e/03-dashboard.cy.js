@@ -308,7 +308,7 @@ context("Dashboard actions", () => {
 		cy.visit("https://dashboard.rtchs.localhost/clubs/kimito-sk/events/new");
 		cy.get("#id_name").type("Jukola 2019 - 2nd Leg");
 		cy.get("#id_event_set-ts-control").parent().click().wait(300);
-		cy.get("#id_event_set-ts-dropdown > .option").eq(1).click().wait(300);
+		cy.get("#id_event_set-ts-dropdown > .option").eq(0).click().wait(300);
 		cy.get("#id_start_date").focus().clear().type("2019-06-16T00:00:00");
 		cy.get("#id_end_date").focus().clear().type("2019-06-16T03:00:00");
 		cy.get("#id_geojson_layer").selectFile(
