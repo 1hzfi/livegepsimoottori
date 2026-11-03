@@ -333,7 +333,7 @@ class ClubViewsTestCase(EssentialApiBase):
         response = client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn("X-Frame-Options", response)
-        self.assertIn("frame-ancestors 'self' *", response["Content-Security-Policy"])
+        self.assertIn("frame-ancestors *", response["Content-Security-Policy"])
 
         url = self.reverse_and_check(
             "event_export_view",
