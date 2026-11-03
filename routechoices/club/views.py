@@ -148,6 +148,7 @@ def club_live_event_feed(request, *args):
     return resp
 
 
+@cache_page(5 if not settings.DEBUG else 0)
 @csp_replace(FRAME_ANCESTORS=("*",))
 def event_view(request, slug):
     club_slug = request.club_slug
