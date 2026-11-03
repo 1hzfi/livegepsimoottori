@@ -315,7 +315,6 @@ CSP_IMG_SRC = (
 )
 CSP_WORKER_SRC = ("'self'", "blob:")
 CSP_CHILD_SRC = ("'self'", "blob:")
-CSP_FRAME_ANCESTORS = ("*",)
 CSRF_USE_SESSIONS = True
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = True
