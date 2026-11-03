@@ -226,7 +226,6 @@ def event_view(request, slug):
 
     # Allow embedding in external site iframe
     response.xframe_options_exempt = True
-
     return response
 
 
