@@ -125,12 +125,12 @@ MIDDLEWARE = [
     "routechoices.core.middleware.XForwardedForMiddleware",
     "routechoices.core.middleware.FilterCountriesIPsMiddleware",
     "routechoices.core.middleware.HostsRequestMiddleware",
-    "csp.middleware.CSPMiddleware",
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "routechoices.core.middleware.CorsMiddleware",
     "routechoices.core.middleware.SessionMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "csp.middleware.CSPMiddleware",
     "routechoices.core.middleware.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "oauth2_provider.middleware.OAuth2TokenMiddleware",
@@ -315,6 +315,7 @@ CSP_IMG_SRC = (
 )
 CSP_WORKER_SRC = ("'self'", "blob:")
 CSP_CHILD_SRC = ("'self'", "blob:")
+CSP_FRAME_ANCESTORS = ("*",)
 CSRF_USE_SESSIONS = True
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = True

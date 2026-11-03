@@ -27,7 +27,7 @@ django-background-tasks @ git+https://github.com/rphlo/django-background-tasks@6
 django-bootstrap5 @ git+https://github.com/rphlo/django-bootstrap5@9250748480a5862cfc94f76d96181f08bd022fff
 django-compressor==4.6.0
 django-cors-headers==4.9.0
-django-csp==4.0
+django-csp==3.8
 django-environ==0.14.0
 django-health-check==4.10.0
 django-hijack==3.8.0

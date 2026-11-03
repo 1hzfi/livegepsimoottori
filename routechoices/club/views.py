@@ -1,6 +1,6 @@
 import time
 from django.views.decorators.clickjacking import xframe_options_exempt
-from csp.decorators import csp_exempt, csp_update
+from csp.decorators import csp_exempt, csp_replace
 from django.conf import settings
 from django.contrib.sitemaps.views import _get_latest_lastmod, x_robots_tag
 from django.core.paginator import EmptyPage, PageNotAnInteger
@@ -147,9 +147,8 @@ def club_live_event_feed(request, *args):
     resp["Content-Type"] = "application/rss+xml"
     return resp
 
-@cache_page(5 if not settings.DEBUG else 0)
-@xframe_options_exempt
-@csp_update({"frame_ancestors": "*"})
+
+@csp_replace(FRAME_ANCESTORS=("*",))
 def event_view(request, slug):
     club_slug = request.club_slug
     if not club_slug:
@@ -226,6 +225,7 @@ def event_view(request, slug):
     if event.privacy == PRIVACY_PRIVATE:
         response["Cache-Control"] = "private"
 
+    response.xframe_options_exempt = True
     return response
 
 
