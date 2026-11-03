@@ -1,6 +1,6 @@
 import time
-from django.views.decorators.clickjacking import xframe_options_exempt
-from csp.decorators import csp_exempt, csp_replace
+
+from csp.decorators import csp_replace
 from django.conf import settings
 from django.contrib.sitemaps.views import _get_latest_lastmod, x_robots_tag
 from django.core.paginator import EmptyPage, PageNotAnInteger
