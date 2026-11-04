@@ -1,3 +1,5 @@
+import datetime as dt
+
 import arrow
 from allauth.account.models import EmailAddress
 from django.core import mail
@@ -109,3 +111,48 @@ class SiteViewsTestCase(EssentialApiBase):
         self.assertTrue("Hello, can I ask a question?" in mail.outbox[0].subject)
         self.assertTrue(self.user.email in mail.outbox[0].subject)
         self.assertTrue(mail.outbox[0].body.startswith("Does it work?"))
+
+
+class SecurityTxtTests(EssentialApiBase):
+    """
+    Test the security.txt file, per:
+    https://adamj.eu/tech/2026/10/01/django-security-txt/
+    """
+
+    def test_success(self):
+        self.client.defaults["HTTP_HOST"] = "www.rtchs.localhost"
+        response = self.client.get(
+            "https://www.rtchs.localhost/.well-known/security.txt", scheme="https"
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response["content-type"] == "text/plain; charset=utf-8"
+        assert response["cache-control"] == "max-age=300, public"
+
+        # Parse the security.txt format
+        content = response.getvalue().decode()
+        fields: dict[str, list[str]] = {}
+        for line in content.splitlines():
+            name, sep, value = line.partition(": ")
+            if sep and not line.startswith("#"):
+                fields.setdefault(name, []).append(value)
+
+        assert fields["Contact"] == ["mailto:security@onehertz.fi"]
+        assert len(fields["Expires"]) == 1
+        expires = dt.datetime.fromisoformat(fields["Expires"][0])
+        assert expires.tzinfo is not None
+
+    def test_head(self):
+        self.client.defaults["HTTP_HOST"] = "www.rtchs.localhost"
+        response = self.client.head(
+            "https://www.rtchs.localhost/.well-known/security.txt", scheme="https"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_post_disallowed(self):
+        self.client.defaults["HTTP_HOST"] = "www.rtchs.localhost"
+        response = self.client.post(
+            "https://www.rtchs.localhost/.well-known/security.txt", scheme="https"
+        )
+
+        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
