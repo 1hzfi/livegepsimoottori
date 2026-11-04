@@ -1943,16 +1943,21 @@ class Event(models.Model, SomewhereOnEarth):
             self.featured = False
 
         send_to_rastilippu = False
-        if self.external_id.startswith(RASTILIPPU_PREFIX) and self.pk:
-            original = Event.objects.get(id=self.pk)
-            if original.map_id != self.map_id or original.slug != self.slug:
+        if self.external_id.startswith(RASTILIPPU_PREFIX):
+            if self.pk:
+                original = Event.objects.get(id=self.pk)
+                if original.map_id != self.map_id or original.slug != self.slug:
+                    send_to_rastilippu = True
+            else:
                 send_to_rastilippu = True
 
         self.invalidate_cache()
         super().save(*args, **kwargs)
+
         if send_to_rastilippu:
             from .bg_tasks import rastilippu_update_event_url
 
+            self.refresh_from_db()
             rastilippu_update_event_url(self.id)
 
     def validate_unique(self, exclude=None):

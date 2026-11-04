@@ -832,6 +832,39 @@ class RLWebHookTestCase(EssentialApiBase):
         self.assertEqual(data_sent["data"]["courses"][0]["course_id"], "1514276621")
         self.assertEqual(data_sent["data"]["courses"][0]["gps_replay_url"], "")
 
+    def test_create_event_without_map_updates_rastilippu_url(self):
+        with patch(
+            "routechoices.core.bg_tasks.rastilippu_update_event_url"
+        ) as mock_rl_update:
+            event = Event.objects.create(
+                name="RR",
+                slug="rr",
+                club=self.club,
+                external_id="RL-1514276621",
+                start_date=arrow.get("2026-08-11T14:00:00Z").datetime,
+                end_date=arrow.get("2026-08-11T19:00:00Z").datetime,
+            )
+            mock_rl_update.assert_called_once_with(event.id)
+
+            event.save()
+            mock_rl_update.assert_called_once_with(event.id)
+
+            # Changing the name should not trigger a call to update the rastilippu URL,
+            # but changing the slug should
+            event.name = "Updated RR"
+            event.slug = "unsaved-slug"
+            event.save(update_fields=["name"])
+            self.assertEqual(mock_rl_update.call_count, 2)
+            self.assertEqual(event.name, "Updated RR")
+            self.assertEqual(event.slug, "rr")
+
+            event.save()
+            self.assertEqual(mock_rl_update.call_count, 2)
+
+            event.slug = "unsaved-slug"
+            event.save()
+            self.assertEqual(mock_rl_update.call_count, 3)
+
     def test_create_event_fails(self):
         url = self.reverse_and_check(
             "webhooks:rastilippu_webhook", "/webhooks/rastilippu"
