@@ -65,7 +65,7 @@ maxminddb==3.2.0
 minify-html==0.18.1
 multidict==7.1.0
 numpy==2.5.4
-oauthlib==4.0.0
+oauthlib==4.0.1
 opencv-python-headless==5.0.0.93
 orjson==3.13.0
 packaging==26.3
