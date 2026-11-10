@@ -18,9 +18,9 @@ def process_file(file_path):
         while line := fp.readline():
             if ", " not in line:
                 continue
-            ts, type = line.split(", ", 1)
+            _ts, type = line.split(", ", 1)
             if type.startswith("GL300 DATA"):
-                ts, type, aid, address, port, data = line.split(", ", 5)
+                _ts, type, _aid, _address, _port, data = line.split(", ", 5)
                 imei = None
                 parts = data.split(",")
                 if parts[0][:8] not in ("+RESP:GT", "+BUFF:GT"):
@@ -67,14 +67,14 @@ def process_file(file_path):
                             tim = arrow.get(
                                 parts[13 + i * len_points], "YYYYMMDDHHmmss"
                             ).int_timestamp
-                        except Exception as e:
+                        except ValueError as e:
                             print(f"Error parsing position: {e!s}", flush=True)
                             continue
                         else:
                             new_locs[imei].append((tim, lat, lon))
-    for imei in new_locs:
-        devices[imei].add_locations(new_locs[imei])
-        print(f"{len(new_locs[imei])} added to device {imei}")
+    for imei, locations in new_locs.items():
+        devices[imei].add_locations(locations)
+        print(f"{len(locations)} added to device {imei}")
 
 
 class Command(BaseCommand):

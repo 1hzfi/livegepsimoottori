@@ -10,7 +10,12 @@ from django.contrib.gis.geoip2 import GeoIP2
 from django.contrib.sessions.backends.base import UpdateError
 from django.contrib.sessions.exceptions import SessionInterrupted
 from django.core.exceptions import DisallowedHost
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseNotFound,
+    HttpResponsePermanentRedirect,
+)
 from django.middleware.csrf import CsrfViewMiddleware as OrigCsrfViewMiddleware
 from django.shortcuts import redirect, render
 from django.urls import get_urlconf, set_urlconf
@@ -112,7 +117,7 @@ class XForwardedForMiddleware:
                     (
                         "Not running behind as many reverse proxies as expected."
                         "\nThe right value for XFF_TRUSTED_PROXY_DEPTH for this "
-                        "request is %d and %d is configured.",
+                        "request is %d and %d is configured."
                     ),
                     len(levels),
                     depth,
@@ -256,6 +261,9 @@ class CsrfViewMiddleware(OrigCsrfViewMiddleware):
         return super().process_response(request, response)
 
 
+geoip2 = GeoIP2()
+
+
 class FilterCountriesIPsMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
@@ -267,11 +275,12 @@ class FilterCountriesIPsMiddleware:
         return response
 
     def process_request(self, request):
-        try:
-            g = GeoIP2()
-            country = g.country_code(request.META["REMOTE_ADDR"])
-        except Exception:
+        ip_address = request.META.get("REMOTE_ADDR")
+        if not ip_address:
             country = None
+        else:
+            country = geoip2.country_code(ip_address)
+
         if country in getattr(settings, "BANNED_COUNTRIES", []):
             return HttpResponse(
                 "Sorry, we block IP addresses from your country.",
@@ -348,20 +357,16 @@ class OAuth2GetTokenMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if not hasattr(request, "user") or request.user.is_anonymous:
-            if tokenstring := request.GET.get("token"):
-                token_checksum = hashlib.sha256(tokenstring.encode("utf-8")).hexdigest()
-                token = AccessToken.objects.filter(
-                    token_checksum=token_checksum
-                ).first()
-                if token:
-                    request.user = request._cached_user = token.user
+        if (not hasattr(request, "user") or request.user.is_anonymous) and (
+            tokenstring := request.GET.get("token")
+        ):
+            token_checksum = hashlib.sha256(tokenstring.encode("utf-8")).hexdigest()
+            token = AccessToken.objects.filter(token_checksum=token_checksum).first()
+            if token:
+                request.user = request._cached_user = token.user
 
         response = self.get_response(request)
         return response
-
-
-from django.http import HttpResponsePermanentRedirect
 
 
 class ACMEAwareSSLRedirectMiddleware:

@@ -299,7 +299,7 @@ class GPSSeurantaClient:
             attempt += 1
             try:
                 self.socket.sendall(data_to_relay.encode("ascii"))
-            except Exception:
+            except OSError:
                 self.connect()
             else:
                 break
@@ -420,10 +420,10 @@ class Club(models.Model):
     frontpage_featured = models.BooleanField("Featured on frontpage", default=False)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ("name",)
         verbose_name = "club"
         verbose_name_plural = "clubs"
-        indexes = [
+        indexes = (
             models.Index(
                 Upper("slug"),
                 name="core_club_slug_upper_idx",
@@ -438,7 +438,7 @@ class Club(models.Model):
                 name="core_club_changed_slug_idx",
             ),
             models.Index("frontpage_featured", name="core_on_frontpage_idx"),
-        ]
+        )
 
     def __str__(self):
         return self.name
@@ -698,7 +698,7 @@ class Map(models.Model, SomewhereOnEarth):
     )
 
     class Meta:
-        ordering = ["-creation_date"]
+        ordering = ("-creation_date",)
         verbose_name = "map"
         verbose_name_plural = "maps"
 
@@ -1624,12 +1624,12 @@ class EventSet(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ["-creation_date", "name"]
-        constraints = [
+        ordering = ("-creation_date", "name")
+        constraints = (
             models.UniqueConstraint(
                 name="event_set_name_club_uc", fields=("name", "club")
-            )
-        ]
+            ),
+        )
         verbose_name = "Bundle"
 
     def __str__(self):
@@ -1892,10 +1892,10 @@ class Event(models.Model, SomewhereOnEarth):
     )
 
     class Meta:
-        ordering = ["-start_date", "name"]
+        ordering = ("-start_date", "name")
         verbose_name = "event"
         verbose_name_plural = "events"
-        indexes = [
+        indexes = (
             models.Index(
                 Upper("slug"),
                 name="core_event_slug_upper_idx",
@@ -1920,8 +1920,8 @@ class Event(models.Model, SomewhereOnEarth):
                 "end_date",
                 name="core_event_listing_idx",
             ),
-        ]
-        constraints = [
+        )
+        constraints = (
             models.CheckConstraint(
                 condition=models.Q(backdrop_map__in=next(zip(*MAP_CHOICES))),
                 name="%(app_label)s_%(class)s_bgmap_valid",
@@ -1931,7 +1931,7 @@ class Event(models.Model, SomewhereOnEarth):
                 fields=("club", "event_set", "name"),
             ),
             models.UniqueConstraint(name="event_slug_club_uc", fields=("club", "slug")),
-        ]
+        )
 
     def __str__(self):
         return self.name
@@ -2126,7 +2126,7 @@ class Event(models.Model, SomewhereOnEarth):
             map_index = int(map_index)
             if map_index <= 0:
                 raise ValueError()
-        except Exception:
+        except ValueError:
             raise Http404()
 
         map_index -= 1
@@ -2205,10 +2205,11 @@ class Event(models.Model, SomewhereOnEarth):
             if selected_year:
                 try:
                     selected_year = int(selected_year)
-                    if not (0 < selected_year < 10_000):
-                        raise ValueError("Year should be between 1 and 9999")
-                except Exception:
+                except ValueError:
                     raise BadRequest("Invalid year")
+                if not (0 < selected_year < 10_000):
+                    raise BadRequest("Year should be between 1 and 9999")
+
             elif years:
                 selected_year = years[0]
 
@@ -2223,10 +2224,11 @@ class Event(models.Model, SomewhereOnEarth):
             if selected_month:
                 try:
                     selected_month = int(selected_month)
-                    if not (0 < selected_month < 13):
-                        raise ValueError("Month value should be between 1 and 12")
-                except Exception:
+                except ValueError:
                     raise BadRequest("Invalid month")
+                if not (0 < selected_month < 13):
+                    raise BadRequest("Month value should be between 1 and 12")
+
             elif months:
                 selected_month = months[0]
 
@@ -2613,7 +2615,7 @@ class MapAssignation(models.Model):
         return self.tags.split(TAGS_SEPARATOR)
 
     class Meta:
-        ordering = ["id"]
+        ordering = ("id",)
 
 
 class Device(models.Model, SomewhereOnEarth):
@@ -2655,7 +2657,7 @@ class Device(models.Model, SomewhereOnEarth):
     _location_count = models.PositiveIntegerField(editable=False, default=0)
 
     class Meta:
-        ordering = ["aid"]
+        ordering = ("aid",)
         verbose_name = "GPS device"
         verbose_name_plural = "GPS devices"
 
@@ -2834,7 +2836,7 @@ class Device(models.Model, SomewhereOnEarth):
         for loc in sorted_new_locations:
             try:
                 ts = int(loc[LOCATION_TIMESTAMP_INDEX])
-            except Exception:
+            except ValueError:
                 continue
             if ts == prev_ts:
                 continue
@@ -2843,7 +2845,7 @@ class Device(models.Model, SomewhereOnEarth):
                 lon = round(float(loc[LOCATION_LONGITUDE_INDEX]), 5)
                 validate_latitude(lat)
                 validate_longitude(lon)
-            except Exception:
+            except ValueError, ValidationError:
                 continue
 
             if not country:
@@ -3100,7 +3102,7 @@ class DeviceArchiveReference(models.Model):
     )
 
     class Meta:
-        ordering = ["-creation_date"]
+        ordering = ("-creation_date",)
 
     def __str__(self):
         return f"Archive {self.archive.aid} of {self.original.aid}"
@@ -3121,7 +3123,7 @@ class ImeiDevice(models.Model):
     )
 
     class Meta:
-        ordering = ["imei"]
+        ordering = ("imei",)
         verbose_name = "IMEI"
         verbose_name_plural = "IMEIs"
 
@@ -3143,15 +3145,13 @@ class DeviceClubOwnership(models.Model):
     nickname = models.CharField(max_length=12, default="")
 
     class Meta:
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 name="device_club_ownership_club_device_uc",
                 fields=("device", "club"),
-            )
-        ]
-        indexes = [
-            models.Index(fields=["club", "device"]),
-        ]
+            ),
+        )
+        indexes = (models.Index(fields=["club", "device"]),)
         verbose_name = "Device ownership"
         verbose_name_plural = "Device ownerships"
 
@@ -3204,7 +3204,7 @@ class Competitor(models.Model, SomewhereOnEarth):
     )
 
     class Meta:
-        ordering = ["start_time", "name"]
+        ordering = ("start_time", "name")
         verbose_name = "competitor"
         verbose_name_plural = "competitors"
 

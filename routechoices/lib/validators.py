@@ -2,10 +2,10 @@ import re
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.validators import (
     DomainNameValidator,
     RegexValidator,
-    ValidationError,
     validate_email,
 )
 from django.utils.translation import gettext_lazy as _
@@ -35,7 +35,7 @@ def validate_imei(number):
     """Check if the number provided is a valid IMEI number."""
     try:
         matched = re.match(r"^\d{15}$", number)
-    except Exception:
+    except ValueError:
         raise ValidationError("Invalid IMEI")
     if not matched:
         if re.search(r"[^\d]", number):
@@ -50,7 +50,7 @@ def validate_latitude(value):
         value = str(value)
     try:
         value = Decimal(value)
-    except Exception:
+    except ValueError:
         raise ValidationError(_("not a number"))
     if value == 0:
         raise ValidationError(_("suspicious zero value"))
@@ -63,7 +63,7 @@ def validate_longitude(value):
         value = str(value)
     try:
         value = Decimal(value)
-    except Exception:
+    except ValueError:
         raise ValidationError(_("not a number"))
     if value == 0:
         raise ValidationError(_("suspicious zero value"))
@@ -133,7 +133,7 @@ def validate_esn(number):
     """Check if the number provided is a valid ESN number."""
     try:
         matched = re.match(r"^\d-\d{7}$", number)
-    except Exception:
+    except ValueError:
         raise ValidationError("Invalid ESN")
     if not matched:
         raise ValidationError("Invalid ESN")

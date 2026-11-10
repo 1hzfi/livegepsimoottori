@@ -34,7 +34,7 @@ class Command(BaseCommand):
         if since:
             try:
                 date_since = arrow.get(since).datetime
-            except Exception:
+            except ValueError:
                 self.stderr.write(self.style.ERROR("Invalid since parameter"))
                 sys.exit(1)
                 return

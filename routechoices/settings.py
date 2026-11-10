@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from importlib import import_module
 
 import environ
 
@@ -44,12 +45,18 @@ GPSSEURANTA_SERVER_ADDR = env.str("GPSSEURANTA_SERVER_ADDR")
 
 DATABASES = {"default": env.db()}
 
+# Check that we are using the correct database engine
+if not DATABASES["default"]["ENGINE"].endswith("postgresql"):
+    raise ValueError(
+        "The database engine must be PostgreSQL. Please check your DATABASE_URL."
+    )
+
 DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
-try:
-    DATABASES["default"]["OPTIONS"]["pool"] = True
-    DATABASES["default"]["OPTIONS"]["server_side_binding"] = True
-except Exception:
-    pass
+database_options = DATABASES["default"].setdefault(
+    "OPTIONS", {"jit": "off", "connect_timeout": 10}
+)
+database_options.setdefault("pool", True)
+database_options.setdefault("server_side_binding", True)
 
 SHORTCUT_BASE_URL = env.str("SHORTCUT_BASE_URL", None)
 
@@ -352,7 +359,14 @@ PERMISSIONS_POLICY = {
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100_000
 THUMBNAIL_URL_TEMPLATE = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
+
 try:
-    from .settings_overrides import *
-except ImportError:
-    print("Loading settings overrides")
+    settings_overrides = import_module(".settings_overrides", __package__)
+except ModuleNotFoundError as error:
+    if error.name != f"{__package__}.settings_overrides":
+        raise
+else:
+    print("Loaded settings_overrides.py")
+    for setting, value in vars(settings_overrides).items():
+        if setting.isupper():
+            globals()[setting] = value

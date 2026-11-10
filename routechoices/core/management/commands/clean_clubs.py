@@ -78,7 +78,7 @@ This email is to let you know that we have now deleted your inactive Routechoice
         if asked_date:
             try:
                 nyt = parse(asked_date)
-            except Exception:
+            except ValueError:
                 self.stderr.write("Invalid date")
                 return
         else:

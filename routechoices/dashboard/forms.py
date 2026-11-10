@@ -12,6 +12,7 @@ import gpxpy
 import orjson as json
 import resvg_py
 from curl_cffi import requests
+from curl_cffi.requests.exceptions import HTTPError
 from defusedxml import minidom
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -81,7 +82,7 @@ def from_timezone_to_utc(date, timezone):
 class UserForm(ModelForm):
     class Meta:
         model = User
-        fields = ["username", "first_name", "last_name"]
+        fields = ("username", "first_name", "last_name")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -334,7 +335,7 @@ class DeviceClubOwnershipForm(ModelForm):
 
     class Meta:
         model = DeviceClubOwnership
-        fields = ["nickname"]
+        fields = ("nickname",)
 
 
 class MapForm(ModelForm):
@@ -347,7 +348,7 @@ class MapForm(ModelForm):
 
     class Meta:
         model = Map
-        fields = ["image", "name", "calibration_string_raw"]
+        fields = ("image", "name", "calibration_string_raw")
 
     def clean_calibration_string_raw(self):
         cc = self.cleaned_data["calibration_string_raw"]
@@ -356,7 +357,7 @@ class MapForm(ModelForm):
             raise ValidationError("Invalid format")
         try:
             return ",".join([f"{float(c):.5f}" for c in cs])
-        except Exception:
+        except ValueError:
             raise ValidationError("Invalid format")
 
     def clean_image(self):
@@ -388,7 +389,7 @@ class EventSetForm(ModelForm):
 
     class Meta:
         model = EventSet
-        fields = ["name", "create_page", "slug", "description", "list_secret_events"]
+        fields = ("name", "create_page", "slug", "description", "list_secret_events")
 
     def validate_unique(self):
         exclude = self._get_validation_exclusions()
@@ -435,6 +436,8 @@ class EventSetForm(ModelForm):
 
 
 class EventForm(ModelForm):
+    timezone = ChoiceField(choices=get_timezone_choices)
+
     def __init__(self, *args, **kwargs):
         self.club = kwargs.pop("club")
         super().__init__(*args, **kwargs)
@@ -448,8 +451,16 @@ class EventForm(ModelForm):
             self.fields["allow_route_upload"].disabled = True
             self.fields["open_registration"].disabled = True
             self.fields["event_set"].disabled = True
-
-    timezone = ChoiceField(choices=get_timezone_choices)
+        self.widgets = {
+            "start_date": DateTimeInput(
+                attrs={"class": "datetimepicker", "autocomplete": "off"}
+            ),
+            "end_date": DateTimeInput(
+                attrs={"class": "datetimepicker", "autocomplete": "off"}
+            ),
+            "acceptable_tags": TextInput(attrs={"class": "tag-input"}),
+            "map_tags": TextInput(attrs={"class": "tag-input"}),
+        }
 
     class Meta:
         model = Event
@@ -475,16 +486,6 @@ class EventForm(ModelForm):
             "map_tags",
             "timezone",
         )
-        widgets = {
-            "start_date": DateTimeInput(
-                attrs={"class": "datetimepicker", "autocomplete": "off"}
-            ),
-            "end_date": DateTimeInput(
-                attrs={"class": "datetimepicker", "autocomplete": "off"}
-            ),
-            "acceptable_tags": TextInput(attrs={"class": "tag-input"}),
-            "map_tags": TextInput(attrs={"class": "tag-input"}),
-        }
 
     def validate_unique(self):
         exclude = self._get_validation_exclusions()
@@ -628,11 +629,11 @@ class EventForm(ModelForm):
         data = f_orig.file.read()
         try:
             json_data = json.loads(data)
-        except Exception:
+        except ValueError:
             raise ValidationError("Invalid JSON File")
         try:
             errors = geojson_validator.validate_structure(json_data, check_crs=False)
-        except Exception:
+        except ValueError:
             raise ValidationError("Could not validate the GeoJSON File")
         if errors:
             raise ValidationError("Invalid GeoJSON File")
@@ -641,12 +642,15 @@ class EventForm(ModelForm):
 
 
 class ExtraMapForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.widgets = {
+            "tags": TextInput(attrs={"class": "tag-input"}),
+        }
+
     class Meta:
         model = MapAssignation
         fields = ("event", "map", "title", "tags")
-        widgets = {
-            "tags": TextInput(attrs={"class": "tag-input"}),
-        }
 
     def clean_map(self):
         raster_map = self.cleaned_data.get("map")
@@ -701,6 +705,13 @@ class CompetitorForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["start_time"].help_text = '<span class="local_time"></span>'
         self.fields["short_name"].required = False
+        self.widgets = {
+            "start_time": DateTimeInput(
+                attrs={"class": "datetimepicker", "autocomplete": "off"}
+            ),
+            "color": TextInput(attrs={"class": "color-input"}),
+            "tags": TextInput(attrs={"class": "tag-input"}),
+        }
 
     class Meta:
         model = Competitor
@@ -713,13 +724,6 @@ class CompetitorForm(ModelForm):
             "color",
             "tags",
         )
-        widgets = {
-            "start_time": DateTimeInput(
-                attrs={"class": "datetimepicker", "autocomplete": "off"}
-            ),
-            "color": TextInput(attrs={"class": "color-input"}),
-            "tags": TextInput(attrs={"class": "tag-input"}),
-        }
 
     def clean_short_name(self):
         name = self.cleaned_data.get("name")
@@ -737,14 +741,14 @@ class CompetitorForm(ModelForm):
         if self.data.get("start_date"):
             try:
                 event_start = get_aware_datetime(self.data.get("start_date"))
-            except Exception:
+            except ValueError:
                 event_start = orig_event.start_date
         else:
             event_start = orig_event.start_date
         if self.data.get("end_date"):
             try:
                 event_end = get_aware_datetime(self.data.get("end_date"))
-            except Exception:
+            except ValueError:
                 event_end = orig_event.end_date
         else:
             event_end = orig_event.end_date
@@ -771,11 +775,11 @@ class UploadGPXForm(Form):
         try:
             data = minidom.parseString(gpx_file.read())
             gpx_file = data.toxml(encoding="utf-8")
-        except Exception:
+        except ValueError:
             raise ValidationError("Couldn't read file")
         try:
             gpx = gpxpy.parse(gpx_file)
-        except Exception:
+        except ValueError:
             raise ValidationError("Couldn't parse GPX format")
         start_time = None
         end_time = None
@@ -838,11 +842,11 @@ class UploadMapGPXForm(Form):
         try:
             data = minidom.parseString(gpx_file.read())
             gpx_xml = data.toxml(encoding="utf-8")
-        except Exception:
+        except ValueError:
             raise ValidationError("Couldn't read file")
         try:
             gpx = gpxpy.parse(gpx_xml)
-        except Exception:
+        except ValueError:
             raise ValidationError("Couldn't parse GPX format")
         self.cleaned_data["gpx_data"] = gpx
 
@@ -933,16 +937,15 @@ class UploadKmzForm(Form):
                     parent = path.parent
                     # Check if any matching file exists in the parent directory
                     matches = list(parent.glob(pattern, case_sensitive=False))
-                    print(matches[0], flush=True)
                     if len(matches) != 1:
-                        raise Exception("No valid doc.kml file")
+                        raise ValueError("No valid doc.kml file")
                     doc_path = matches[0]
                     doc_file = doc_path.name
                     with open(
                         os.path.join(tmp_extract_dir, doc_file), "r", encoding="utf-8"
                     ) as f:
                         kml = f.read().encode("utf8")
-                except Exception:
+                except ValueError:
                     raise ValidationError("Could not extract maps from this file.")
             elif file.name.lower().endswith(".kml"):
                 kml = file.read()
@@ -950,7 +953,7 @@ class UploadKmzForm(Form):
                 raise ValidationError("Not a keyhole file")
             try:
                 overlays = extract_ground_overlays_info(kml)
-            except Exception:
+            except ValueError:
                 raise ValidationError("Invalid File")
 
             if not overlays:
@@ -966,7 +969,7 @@ class UploadKmzForm(Form):
                     try:
                         r = requests.get(image_path, timeout=10)
                         r.raise_for_status()
-                    except Exception:
+                    except HTTPError:
                         raise ValidationError("File contains an unreachable image URL")
                     file_data = r.content
                 elif is_compressed:
@@ -1193,22 +1196,21 @@ class CompetitorUploadGPSForm(Form):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         uploadable_competitors = []
-        if not event.allow_route_upload:
-            return []
-        for competitor, from_date, end_date in event.iterate_competitors():
-            if competitor.user:
-                if user.is_authenticated and competitor.user == user:
+        if event.allow_route_upload:
+            for competitor, from_date, end_date in event.iterate_competitors():
+                if competitor.user:
+                    if user.is_authenticated and competitor.user == user:
+                        uploadable_competitors.append(competitor)
+                    continue
+                if not competitor.device_id:
                     uploadable_competitors.append(competitor)
-                continue
-            if not competitor.device_id:
-                uploadable_competitors.append(competitor)
-                continue
+                    continue
 
-            _, nb_pts = competitor.device.get_locations_between_dates(
-                from_date, end_date, encode=True
-            )
-            if nb_pts == 0:
-                uploadable_competitors.append(competitor)
+                _, nb_pts = competitor.device.get_locations_between_dates(
+                    from_date, end_date, encode=True
+                )
+                if nb_pts == 0:
+                    uploadable_competitors.append(competitor)
         self.fields["competitor_aid"].choices = [
             (c.aid, c.name) for c in uploadable_competitors
         ]

@@ -23,7 +23,7 @@ class Command(BaseCommand):
             livelox.parse_init_data(event_url)
             event = livelox.get_or_create_event()
             livelox.assign_maps_to_event(event)
-        except Exception:
+        except ValueError:
             self.stderr.write(self.style.ERROR("Could not fetch Livelox event data…"))
             sys.exit(1)
             return

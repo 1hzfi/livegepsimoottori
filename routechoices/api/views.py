@@ -12,7 +12,9 @@ import orjson as json
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.geoip2 import GeoIP2
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import (
+    PermissionDenied,
+)
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import Prefetch, Q
 from django.http import HttpResponse
@@ -346,7 +348,7 @@ def event_list(request):
         if slug_raw:
             try:
                 validate_nice_slug(slug_raw)
-            except Exception:
+            except ValidationError:
                 raise ValidationError("Invalid slug")
             else:
                 slug = slug_raw
@@ -356,7 +358,7 @@ def event_list(request):
         if start_date_raw:
             try:
                 start_date = arrow.get(start_date_raw).datetime
-            except Exception:
+            except ValueError:
                 raise ValidationError("Invalid start_date")
 
         end_date_raw = request.data.get("end_date")
@@ -364,7 +366,7 @@ def event_list(request):
             raise ValidationError("end_date is required")
         try:
             end_date = arrow.get(end_date_raw).datetime
-        except Exception:
+        except ValueError:
             raise ValidationError("Invalid end_date")
         else:
             if end_date <= start_date:
@@ -392,12 +394,13 @@ def event_list(request):
         if open_registration_raw:
             open_registration = True
             if acceptable_tags_raw := request.data.get("acceptable_tags", ""):
-                try:
-                    acceptable_tags = TAGS_SEPARATOR.join(
-                        acceptable_tags_raw.split(TAGS_SEPARATOR)
-                    )
-                except Exception:
-                    raise ValidationError("Invalid acceptable_tags")
+                acceptable_tags = TAGS_SEPARATOR.join(
+                    [
+                        tag.strip()
+                        for tag in acceptable_tags_raw.split(TAGS_SEPARATOR)
+                        if tag.strip()
+                    ]
+                )
 
         allow_route_upload = False
         allow_route_upload_raw = request.data.get("allow_route_upload")
@@ -419,7 +422,7 @@ def event_list(request):
         )
         try:
             event.full_clean()
-        except Exception as e:
+        except DjangoValidationError as e:
             raise ValidationError(e)
         event.save()
         output = {
@@ -803,7 +806,7 @@ def create_competitor(request):
     if start_time_query:
         try:
             start_time = arrow.get(start_time_query).datetime
-        except Exception:
+        except ValueError:
             start_time = None
             errors.append("Start time could not be parsed")
     elif event.start_date < now() < event.end_date:
@@ -845,9 +848,9 @@ def create_competitor(request):
             elif loc_count == 0:
                 errors.append("Empty route")
             else:
+                loc_array = []
+                start_time = None
                 try:
-                    loc_array = []
-                    start_time = None
                     for tim, lat, lon in zip(times, lats, lons):
                         if tim and lat and lon:
                             validate_longitude(lon)
@@ -861,7 +864,7 @@ def create_competitor(request):
                                 if not start_time or tim < start_time:
                                     start_time = int(tim)
                                 loc_array.append((int(tim), lat, lon))
-                except Exception:
+                except DjangoValidationError, ValueError:
                     errors.append("Invalid route data")
                 else:
                     if len(loc_array) > 0:
@@ -901,7 +904,7 @@ def create_competitor(request):
     if color:
         try:
             color_hex_validator(color)
-        except Exception:
+        except DjangoValidationError:
             color = ""
 
     if errors:
@@ -1051,7 +1054,7 @@ def competitor_api(request, competitor_id):
     if new_color is not None:
         try:
             color_hex_validator(new_color)
-        except Exception:
+        except DjangoValidationError:
             new_color = ""
 
     if not is_user_event_admin:
@@ -1199,15 +1202,15 @@ def competitor_route_upload(request, competitor_id):
         if tim and lat and lon:
             try:
                 validate_longitude(lon)
-            except Exception:
+            except DjangoValidationError:
                 raise ValidationError("Invalid longitude value")
             try:
                 validate_latitude(lat)
-            except Exception:
+            except DjangoValidationError:
                 raise ValidationError("Invalid latitude value")
             try:
                 int(tim)
-            except Exception:
+            except ValueError:
                 raise ValidationError("Invalid time value")
             if event.start_date.timestamp() <= tim <= event.end_date.timestamp():
                 if not start_time or tim < start_time:
@@ -1478,18 +1481,25 @@ def event_zip(request, event_id):
     return response
 
 
+geoip2 = GeoIP2()
+
+
 @swagger_auto_schema(
     method="get",
     auto_schema=None,
 )
 @api_GET_view
 def ip_latlon(request):
-    try:
-        g = GeoIP2()
-        lat, lon = g.lat_lon(request.META["REMOTE_ADDR"])
-        response = {"status": "success", "lat": lat, "lon": lon}
-    except Exception:
+    ip_address = request.META.get("REMOTE_ADDR")
+    if not ip_address:
         response = {"status": "fail"}
+        return Response(response, headers={"Cache-Control": "Private"})
+
+    lat, lon = geoip2.lat_lon(ip_address)
+    if not lat or not lon:
+        response = {"status": "fail"}
+    else:
+        response = {"status": "success", "lat": lat, "lon": lon}
     return Response(response, headers={"Cache-Control": "Private"})
 
 
@@ -1606,7 +1616,7 @@ def locations_api_gw(request):
     if battery_level_posted:
         try:
             battery_level = int(battery_level_posted)
-        except Exception:
+        except ValueError:
             pass
             # raise ValidationError("Invalid battery_level value type")
             # Do not raise exception to stay compatible with legacy apps
@@ -1686,7 +1696,7 @@ def create_device_id(request):
     if imei:
         try:
             validate_imei(imei)
-        except Exception as e:
+        except DjangoValidationError as e:
             raise ValidationError(str(e.message))
         status_code = status.HTTP_200_OK
         try:
@@ -1929,12 +1939,12 @@ def event_map_list(request, event_id):
         raster_map = Map(club_id=event.club_id)
         try:
             raster_map.bound_api = coordinates_input
-        except Exception:
+        except ValueError:
             raise ValidationError("Invalid coordinates value")
 
         try:
             raster_map.data_uri = image_input
-        except Exception:
+        except ValueError:
             if not image_input.startswith("data:"):
                 raise ValidationError("Invalid url value (Only data URI are accepted)")
             raise ValidationError("Invalid url value")
@@ -2028,13 +2038,13 @@ def event_map_detail(request, event_id, index="1", **kwargs):
         if coordinates_input:
             try:
                 raster_map.bound_api = coordinates_input
-            except Exception:
+            except ValueError:
                 raise ValidationError("Invalid coordinates value")
 
         if image_input:
             try:
                 raster_map.data_uri = image_input
-            except Exception:
+            except ValueError:
                 if not image_input.startswith("data:"):
                     raise ValidationError(
                         "Invalid url value (Only data URI are accepted)"
