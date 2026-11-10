@@ -133,7 +133,7 @@ def validate_esn(number):
     """Check if the number provided is a valid ESN number."""
     try:
         matched = re.match(r"^\d-\d{7}$", number)
-    except ValueError:
+    except ValueError, TypeError:
         raise ValidationError("Invalid ESN")
     if not matched:
         raise ValidationError("Invalid ESN")
