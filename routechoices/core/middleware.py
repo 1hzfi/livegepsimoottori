@@ -6,7 +6,7 @@ from re import compile
 import arrow
 from corsheaders.middleware import CorsMiddleware as OrigCorsMiddleware
 from django.conf import settings
-from django.contrib.gis.geoip2 import GeoIP2
+from django.contrib.gis.geoip2 import GeoIP2, GeoIP2Exception
 from django.contrib.sessions.backends.base import UpdateError
 from django.contrib.sessions.exceptions import SessionInterrupted
 from django.core.exceptions import DisallowedHost
@@ -261,7 +261,10 @@ class CsrfViewMiddleware(OrigCsrfViewMiddleware):
         return super().process_response(request, response)
 
 
-geoip2 = GeoIP2()
+try:
+    geoip2 = GeoIP2()
+except GeoIP2Exception:
+    geoip2 = None
 
 
 class FilterCountriesIPsMiddleware:
@@ -276,10 +279,13 @@ class FilterCountriesIPsMiddleware:
 
     def process_request(self, request):
         ip_address = request.META.get("REMOTE_ADDR")
-        if not ip_address:
+        if not ip_address or not geoip2:
             country = None
         else:
-            country = geoip2.country_code(ip_address)
+            try:
+                country = geoip2.country_code(ip_address)
+            except GeoIP2Exception:
+                country = None
 
         if country in getattr(settings, "BANNED_COUNTRIES", []):
             return HttpResponse(

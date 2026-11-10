@@ -11,7 +11,7 @@ import gps_data_codec
 import orjson as json
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.gis.geoip2 import GeoIP2
+from django.contrib.gis.geoip2 import GeoIP2, GeoIP2Exception
 from django.core.exceptions import (
     PermissionDenied,
 )
@@ -1481,7 +1481,10 @@ def event_zip(request, event_id):
     return response
 
 
-geoip2 = GeoIP2()
+try:
+    geoip2 = GeoIP2()
+except GeoIP2Exception:
+    geoip2 = None
 
 
 @swagger_auto_schema(
@@ -1491,11 +1494,14 @@ geoip2 = GeoIP2()
 @api_GET_view
 def ip_latlon(request):
     ip_address = request.META.get("REMOTE_ADDR")
-    if not ip_address:
+    if not ip_address or not geoip2:
         response = {"status": "fail"}
         return Response(response, headers={"Cache-Control": "Private"})
 
-    lat, lon = geoip2.lat_lon(ip_address)
+    try:
+        lat, lon = geoip2.lat_lon(ip_address)
+    except GeoIP2Exception:
+        lat, lon = None, None
     if not lat or not lon:
         response = {"status": "fail"}
     else:
