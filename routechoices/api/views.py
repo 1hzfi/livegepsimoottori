@@ -348,7 +348,7 @@ def event_list(request):
         if slug_raw:
             try:
                 validate_nice_slug(slug_raw)
-            except ValidationError:
+            except DjangoValidationError:
                 raise ValidationError("Invalid slug")
             else:
                 slug = slug_raw
