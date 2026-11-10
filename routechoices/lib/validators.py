@@ -1,5 +1,5 @@
 import re
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -50,7 +50,7 @@ def validate_latitude(value):
         value = str(value)
     try:
         value = Decimal(value)
-    except ValueError, TypeError:
+    except ValueError, TypeError, InvalidOperation:
         raise ValidationError(_("not a number"))
     if value == 0:
         raise ValidationError(_("suspicious zero value"))
@@ -63,7 +63,7 @@ def validate_longitude(value):
         value = str(value)
     try:
         value = Decimal(value)
-    except ValueError, TypeError:
+    except ValueError, TypeError, InvalidOperation:
         raise ValidationError(_("not a number"))
     if value == 0:
         raise ValidationError(_("suspicious zero value"))
