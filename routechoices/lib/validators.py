@@ -35,7 +35,7 @@ def validate_imei(number):
     """Check if the number provided is a valid IMEI number."""
     try:
         matched = re.match(r"^\d{15}$", number)
-    except ValueError:
+    except ValueError, TypeError:
         raise ValidationError("Invalid IMEI")
     if not matched:
         if re.search(r"[^\d]", number):
@@ -50,7 +50,7 @@ def validate_latitude(value):
         value = str(value)
     try:
         value = Decimal(value)
-    except ValueError:
+    except ValueError, TypeError:
         raise ValidationError(_("not a number"))
     if value == 0:
         raise ValidationError(_("suspicious zero value"))
@@ -63,7 +63,7 @@ def validate_longitude(value):
         value = str(value)
     try:
         value = Decimal(value)
-    except ValueError:
+    except ValueError, TypeError:
         raise ValidationError(_("not a number"))
     if value == 0:
         raise ValidationError(_("suspicious zero value"))
