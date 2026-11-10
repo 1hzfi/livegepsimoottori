@@ -54,8 +54,11 @@ def validate_latitude(value):
         raise ValidationError(_("not a number"))
     if value == 0:
         raise ValidationError(_("suspicious zero value"))
-    if value < -90 or value > 90:
-        raise ValidationError(_("latitude out of range -90.0 90.0"))
+    try:
+        if not (-90 <= value <= 90):
+            raise ValidationError(_("latitude out of range -90.0 90.0"))
+    except InvalidOperation:
+        raise ValidationError(_("not a number"))
 
 
 def validate_longitude(value):
@@ -67,8 +70,11 @@ def validate_longitude(value):
         raise ValidationError(_("not a number"))
     if value == 0:
         raise ValidationError(_("suspicious zero value"))
-    if value < -180 or value > 180:
-        raise ValidationError(_("longitude out of range -180.0 180.0"))
+    try:
+        if not (-180 <= value <= 180):
+            raise ValidationError(_("longitude out of range -180.0 180.0"))
+    except InvalidOperation:
+        raise ValidationError(_("not a number"))
 
 
 def validate_nice_slug(slug):
