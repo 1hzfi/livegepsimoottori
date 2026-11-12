@@ -1181,7 +1181,11 @@ class RegisterForm(Form):
 
 
 class CompetitorUploadGPSForm(Form):
-    competitor_aid = ChoiceField(required=True, choices=[], label="Competitor")
+    competitor_aid = ChoiceField(
+        required=True,
+        choices=[],
+        label="Competitor",
+    )
     gpx_file = FileField(
         max_length=255,
         validators=[FileExtensionValidator(allowed_extensions=["gpx", "tcx", "fit"])],
@@ -1211,7 +1215,7 @@ class CompetitorUploadGPSForm(Form):
                 )
                 if nb_pts == 0:
                     uploadable_competitors.append(competitor)
-        self.fields["competitor_aid"].choices = [
+        self.fields["competitor_aid"].choices = [(None, "Select a competitor…")] + [
             (c.aid, c.name) for c in uploadable_competitors
         ]
 
