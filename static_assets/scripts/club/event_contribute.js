@@ -4,17 +4,11 @@ function onGPXLoaded(e) {
 	try {
 		parsedGpx = parseGpx(xml);
 	} catch (e) {
-		swal({
-			text: "Error parsing your GPX file!",
-			title: "error",
-			type: "error",
-		});
-		return;
+		return [{}, "Invalid GPX file"];
 	}
 	const newRoute = [];
 	if (parsedGpx.segments.length === 0) {
-		onRouteLoaded(newRoute);
-		return;
+		return [{}, "No locations found in this file"];
 	}
 	let missingTimeInfo = false;
 	for (const segment of parsedGpx.segments) {
@@ -38,14 +32,9 @@ const onTCXLoaded = (e) => {
 		parseTCXString(xml, (wo) => {
 			route = onTCXParsed(wo);
 		});
-		return route;
+		return [route, null];
 	} catch (e) {
-		swal({
-			text: "Error parsing your TCX file!",
-			title: "error",
-			type: "error",
-		});
-		return false;
+		return [{}, "Invalid TCX file"];
 	}
 };
 
@@ -58,15 +47,12 @@ const onFitLoaded = (e) => {
 		elapsedRecordField: "timer_time",
 		mode: "list",
 	});
-	let route = null;
-	fitParser.parse(e.target.result, (error, data) => {
-		if (error) {
-			swal({
-				text: "Error parsing your FIT file!",
-				title: "error",
-				type: "error",
-			});
-			return false;
+	let route = {};
+	let error = null;
+	fitParser.parse(e.target.result, (err, data) => {
+		if (err) {
+			error = "Invalid FIT file";
+			return;
 		}
 		const newRoute = [];
 		let missingTimeInfo = false;
@@ -82,44 +68,27 @@ const onFitLoaded = (e) => {
 				}
 			}
 		}
-		route = onRouteLoaded(newRoute, missingTimeInfo);
+		[route, error] = onRouteLoaded(newRoute, missingTimeInfo);
 	});
-	return route;
+	return [route, error];
 };
 
 function onRouteLoaded(newRoute, missingTimeInfo) {
 	if (!newRoute?.length) {
 		if (missingTimeInfo) {
-			swal({
-				text: "Missing locations date/time information!",
-				title: "error",
-				type: "error",
-			});
-		} else {
-			swal({
-				text: "No locations found in this file!",
-				title: "error",
-				type: "error",
-			});
+			return [{}, "No points with time information found in this file"];
 		}
-		return false;
+		return [{}, "No locations found in this file"];
 	}
 	const ts = newRoute.map((pt) => Math.round(+pt.time / 1e3)).join(",");
 	const latlngs = newRoute
 		.map((pt) => `${+pt.latLon[0].toFixed(5)} ${+pt.latLon[1].toFixed(5)}`)
 		.join(",");
-	let route = { timestamps: ts, latlngs: latlngs };
+	const route = { timestamps: ts, latlngs: latlngs };
 	if (JSON.stringify(route).length > 2 * 1e7) {
-		route = {};
-		u("#id_gpx_file").val("");
-		swal({
-			text: "File is too big!",
-			title: "error",
-			type: "error",
-		});
-		return false;
+		return [{}, "File is too big"];
 	}
-	return route;
+	return [route, null];
 }
 
 function getGpxData(node, resultRaw) {
@@ -149,6 +118,45 @@ function getGpxData(node, resultRaw) {
 					segment.push(trkpt);
 				}
 			}
+			break;
+		}
+		case "rte": {
+			const segment = [];
+			result.segments.push(segment);
+			for (let i = 0; i < node.childNodes.length; i++) {
+				const snode = node.childNodes[i];
+				if (snode.nodeName === "rtept") {
+					const rtept = {
+						loc: [
+							Number.parseFloat(snode.attributes.lat.value),
+							Number.parseFloat(snode.attributes.lon.value),
+						],
+					};
+					for (let j = 0; j < snode.childNodes.length; j++) {
+						const ssnode = snode.childNodes[j];
+						if (ssnode.nodeName === "time") {
+							rtept.time = new Date(ssnode.childNodes[0].data);
+						}
+					}
+					segment.push(rtept);
+				}
+			}
+			break;
+		}
+		case "wpt": {
+			const wpt = {
+				loc: [
+					Number.parseFloat(node.attributes.lat.value),
+					Number.parseFloat(node.attributes.lon.value),
+				],
+			};
+			for (let j = 0; j < node.childNodes.length; j++) {
+				const ssnode = node.childNodes[j];
+				if (ssnode.nodeName === "time") {
+					wpt.time = new Date(ssnode.childNodes[0].data);
+				}
+			}
+			result.segments.push([wpt]);
 			break;
 		}
 		default:
@@ -236,6 +244,70 @@ function selectizeDeviceInput(field) {
 	});
 }
 
+renderGPSUploader = (el, onValidCB, onErrorCB) => {
+	const gpsUploader = u(el);
+	if (gpsUploader.nodes.length) {
+		const gpsFileInput = gpsUploader.closest("input[type=file]");
+		gpsFileInput.attr("accept", ".gpx,.tcx,.fit");
+		gpsFileInput.on("change", function () {
+			gpsFileInput.removeClass("was-validated", "is-valid", "is-invalid");
+			gpsFileInput.closest(".invalid-feedback").remove();
+
+			if (this.files.length > 0) {
+				gpsFileInput.parent().find(".invalid-feedback").remove();
+				const gpsFile = this.files[0];
+				const filename = gpsFile.name;
+				const fr = new FileReader();
+				let onload = null;
+				let readFunction = "readAsText";
+				if (filename.toLowerCase().endsWith(".tcx")) {
+					onload = onTCXLoaded;
+				} else if (filename.toLowerCase().endsWith(".fit")) {
+					onload = onFitLoaded;
+					readFunction = "readAsArrayBuffer";
+				} else {
+					onload = onGPXLoaded;
+				}
+
+				fr.onload = (e) => {
+					const [route, error] = onload(e);
+					console.log("route", route, "error", error);
+					const jsonBlob = new Blob([JSON.stringify(route)], {
+						type: "text/plain;charset=us-ascii",
+					});
+					const jsonFile = new File([jsonBlob], filename, {
+						type: "text/plain",
+					});
+					const dataTransfer = new DataTransfer();
+					dataTransfer.items.add(jsonFile);
+					const inputElement = gpsFileInput.nodes[0];
+					inputElement.files = dataTransfer.files;
+					if (error) {
+						gpsFileInput
+							.addClass("was-validated", "is-invalid")
+							.removeClass("is-valid")
+							.after(
+								'<div class="invalid-feedback">Invalid GPS file (' +
+									error +
+									")</div>",
+							);
+						if (onErrorCB) onErrorCB();
+						return;
+					}
+					gpsFileInput
+						.addClass("was-validated", "is-valid")
+						.removeClass("is-invalid")
+						.after('<div class="valid-feedback">File ready for upload</div>');
+					if (onValidCB) onValidCB();
+				};
+
+				fr[readFunction](gpsFile);
+			}
+		});
+		gpsFileInput.trigger("change");
+	}
+};
+
 (() => {
 	if (u("#registration-form").nodes.length) {
 		u("#id_race_complete").on("change", (e) => {
@@ -251,47 +323,10 @@ function selectizeDeviceInput(field) {
 				}
 		});
 		u("#id_race_complete").trigger("change");
-		u("#id_gps_file").on("change", function () {
-			u("#id_gpx_file").removeClass("was-validated", "is-valid");
-			u("id_js_enabled").val("");
-			if (this.files.length > 0) {
-				const gpsFile = this.files[0];
-				const filename = gpsFile.name;
-				const fr = new FileReader();
-				let onload = null;
-				let readFunction = "readAsText";
-				if (filename.toLowerCase().endsWith(".tcx")) {
-					onload = onTCXLoaded;
-				} else if (filename.toLowerCase().endsWith(".fit")) {
-					onload = onFitLoaded;
-					readFunction = "readAsArrayBuffer";
-				} else {
-					onload = onGPXLoaded;
-				}
-				fr.onload = (e) => {
-					const route = onload(e);
-					const isEmpty = Object.keys(route).length === 0;
-					if (!isEmpty) {
-						const jsonBlob = new Blob([JSON.stringify(route)], {
-							type: "text/plain;charset=us-ascii",
-						});
-						const jsonFile = new File([jsonBlob], filename, {
-							type: "text/plain",
-						});
-						const dataTransfer = new DataTransfer();
-						dataTransfer.items.add(jsonFile);
-						const inputElement = document.getElementById("id_gps_file");
-						inputElement.files = dataTransfer.files;
-						u("#id_js_enabled").val("on");
-						u("#id_gps_file").addClass("was-validated", "is-valid");
-						// Hide the Tracker ID selector
-						const selectEl = document.getElementById("id_device");
-						const control = selectEl?.tomselect;
-						control?.clear();
-					}
-				};
-				fr[readFunction](gpsFile);
-			}
+		renderGPSUploader("#id_gps_file", () => {
+			const selectEl = document.getElementById("id_device");
+			const control = selectEl?.tomselect;
+			control?.clear();
 		});
 	}
 	// Selectize Device selector
@@ -342,48 +377,7 @@ function selectizeDeviceInput(field) {
 		}
 	}
 
-	if (u("#id_gpx_file").nodes.length) {
-		u("#id_gpx_file").attr("accept", ".gpx,.tcx,.fit");
-		u("#id_gpx_file").on("change", function () {
-			u("#id_gpx_file").removeClass("was-validated", "is-valid");
-			u("id_js_enabled2").val("");
-			if (this.files.length > 0) {
-				const gpsFile = this.files[0];
-				const filename = gpsFile.name;
-				const fr = new FileReader();
-				let onload = null;
-				let readFunction = "readAsText";
-				if (filename.toLowerCase().endsWith(".tcx")) {
-					onload = onTCXLoaded;
-				} else if (filename.toLowerCase().endsWith(".fit")) {
-					onload = onFitLoaded;
-					readFunction = "readAsArrayBuffer";
-				} else {
-					onload = onGPXLoaded;
-				}
-				fr.onload = (e) => {
-					const route = onload(e);
-					const isEmpty = Object.keys(route).length === 0;
-					if (!isEmpty) {
-						const jsonBlob = new Blob([JSON.stringify(route)], {
-							type: "text/plain;charset=us-ascii",
-						});
-						const jsonFile = new File([jsonBlob], filename, {
-							type: "text/plain",
-						});
-						const dataTransfer = new DataTransfer();
-						dataTransfer.items.add(jsonFile);
-						const inputElement = document.getElementById("id_gpx_file");
-						inputElement.files = dataTransfer.files;
-						u("#id_js_enabled2").val("on");
-						u("#id_gpx_file").addClass("was-validated", "is-valid");
-					}
-				};
-				fr[readFunction](gpsFile);
-			}
-		});
-	}
-
+	renderGPSUploader("#id_gpx_file");
 	u(".date-utc").each((el) => {
 		$el = u(el);
 		$el.text(dayjs($el.data("date")).local().format("LLLL"));

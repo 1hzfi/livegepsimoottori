@@ -299,7 +299,7 @@ class GPSSeurantaClient:
             attempt += 1
             try:
                 self.socket.sendall(data_to_relay.encode("ascii"))
-            except OSError:
+            except OSError, AttributeError:
                 self.connect()
             else:
                 break

@@ -769,6 +769,7 @@ class UploadGPXForm(Form):
     gpx_file = FileField(
         max_length=255, validators=[FileExtensionValidator(allowed_extensions=["gpx"])]
     )
+    gpx_file.widget.attrs.update({"class": "gps_uploader"})
 
     def clean_gpx_file(self):
         gpx_file = self.cleaned_data["gpx_file"]
@@ -1059,6 +1060,7 @@ class RegisterForm(Form):
         validators=[FileExtensionValidator(allowed_extensions=["gpx", "tcx", "fit"])],
         required=False,
     )
+    gps_file.widget.attrs.update({"class": "gps_uploader"})
 
     def __init__(self, *args, **kwargs):
         self.event = kwargs.pop("event", None)
@@ -1120,11 +1122,12 @@ class RegisterForm(Form):
         gps_file = self.cleaned_data.get("gps_file")
         if not gps_file:
             return None
-        if gps_file and not self.data.get("js_enabled"):
-            raise ValidationError("You must enable javascript to upload GPS files")
 
         raw_data = gps_file.read()
         json_data = json.loads(raw_data)
+
+        if not json_data:
+            raise ValidationError("No GPS data")
 
         timestamps_raw = json_data.get("timestamps")
         if not timestamps_raw:
@@ -1232,8 +1235,6 @@ class CompetitorUploadGPSForm(Form):
         gps_file = self.cleaned_data.get("gpx_file")
         if not gps_file:
             return None
-        if gps_file and not self.data.get("js_enabled2"):
-            raise ValidationError("You must enable javascript to upload GPS files")
 
         raw_data = gps_file.read()
         json_data = json.loads(raw_data)

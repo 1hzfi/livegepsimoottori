@@ -70,7 +70,6 @@
                     <form action="" method="post" id="registration-form" enctype="multipart/form-data">
                         {% csrf_token %}
                         {% bootstrap_form register_form %}
-                        <input id="id_js_enabled" name="js_enabled" type="hidden" value="off"/>
                         <p id="warning-if-device-id" class="d-none">
                             <i class="fa-solid fa-triangle-exclamation"></i>
                             <span>
@@ -96,7 +95,6 @@
                     <form action="" method="post" id="upload-form" enctype="multipart/form-data">
                     {% csrf_token %}
                     {% bootstrap_form upload_form %}
-                    <input id="id_js_enabled2" name="js_enabled2" type="hidden" value="off"/>
                     <button type="submit" class="btn btn-primary dashboard-link" name="upload-form">
                         <i class="fa-solid fa-cloud-arrow-up"></i> <span>Upload</span>
                     </button>
