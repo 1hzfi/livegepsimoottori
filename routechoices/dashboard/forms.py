@@ -451,16 +451,6 @@ class EventForm(ModelForm):
             self.fields["allow_route_upload"].disabled = True
             self.fields["open_registration"].disabled = True
             self.fields["event_set"].disabled = True
-        self.widgets = {
-            "start_date": DateTimeInput(
-                attrs={"class": "datetimepicker", "autocomplete": "off"}
-            ),
-            "end_date": DateTimeInput(
-                attrs={"class": "datetimepicker", "autocomplete": "off"}
-            ),
-            "acceptable_tags": TextInput(attrs={"class": "tag-input"}),
-            "map_tags": TextInput(attrs={"class": "tag-input"}),
-        }
 
     class Meta:
         model = Event
@@ -486,6 +476,16 @@ class EventForm(ModelForm):
             "map_tags",
             "timezone",
         )
+        widgets = {
+            "start_date": DateTimeInput(
+                attrs={"class": "datetimepicker", "autocomplete": "off"}
+            ),
+            "end_date": DateTimeInput(
+                attrs={"class": "datetimepicker", "autocomplete": "off"}
+            ),
+            "acceptable_tags": TextInput(attrs={"class": "tag-input"}),
+            "map_tags": TextInput(attrs={"class": "tag-input"}),
+        }
 
     def validate_unique(self):
         exclude = self._get_validation_exclusions()
@@ -642,15 +642,12 @@ class EventForm(ModelForm):
 
 
 class ExtraMapForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.widgets = {
-            "tags": TextInput(attrs={"class": "tag-input"}),
-        }
-
     class Meta:
         model = MapAssignation
         fields = ("event", "map", "title", "tags")
+        widgets = {
+            "tags": TextInput(attrs={"class": "tag-input"}),
+        }
 
     def clean_map(self):
         raster_map = self.cleaned_data.get("map")
@@ -705,13 +702,6 @@ class CompetitorForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["start_time"].help_text = '<span class="local_time"></span>'
         self.fields["short_name"].required = False
-        self.widgets = {
-            "start_time": DateTimeInput(
-                attrs={"class": "datetimepicker", "autocomplete": "off"}
-            ),
-            "color": TextInput(attrs={"class": "color-input"}),
-            "tags": TextInput(attrs={"class": "tag-input"}),
-        }
 
     class Meta:
         model = Competitor
@@ -724,6 +714,13 @@ class CompetitorForm(ModelForm):
             "color",
             "tags",
         )
+        widgets = {
+            "start_time": DateTimeInput(
+                attrs={"class": "datetimepicker", "autocomplete": "off"}
+            ),
+            "color": TextInput(attrs={"class": "color-input"}),
+            "tags": TextInput(attrs={"class": "tag-input"}),
+        }
 
     def clean_short_name(self):
         name = self.cleaned_data.get("name")
