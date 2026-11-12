@@ -47,7 +47,7 @@ context("Dashboard actions", () => {
 		cy.get("button:not([type]),button[type=submit]").eq(0).click();
 		cy.contains("Registration complete!");
 
-		cy.get("#id_competitor_aid").select(0);
+		cy.get("#id_competitor_aid").select(1);
 		cy.get("#id_gpx_file").selectFile({
 			contents: "cypress/fixtures/Jukola2019/1/gpx/HaldenSK.gpx",
 			fileName: "HaldenSK.gpx",
