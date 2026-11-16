@@ -321,7 +321,7 @@ CSP_IMG_SRC = (
     "blob:",
 )
 CSP_WORKER_SRC = ("'self'", "blob:")
-CSP_CHILD_SRC = ("'self'", "blob:")
+CSP_CHILD_SRC = ("'self'", "blob:", "challenges.cloudflare.com")
 CSP_FRAME_ANCESTORS = ("*",)
 CSRF_USE_SESSIONS = True
 COMPRESS_ENABLED = True
