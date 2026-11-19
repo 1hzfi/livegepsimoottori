@@ -698,7 +698,7 @@ class Map(models.Model, SomewhereOnEarth):
     )
 
     class Meta:
-        ordering = ("-creation_date",)
+        ordering = ("-pk",)
         verbose_name = "map"
         verbose_name_plural = "maps"
 
@@ -1624,7 +1624,7 @@ class EventSet(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ("-creation_date", "name")
+        ordering = ("-pk", "name")
         constraints = (
             models.UniqueConstraint(
                 name="event_set_name_club_uc", fields=("name", "club")
@@ -3102,7 +3102,7 @@ class DeviceArchiveReference(models.Model):
     )
 
     class Meta:
-        ordering = ("-creation_date",)
+        ordering = ("-pk",)
 
     def __str__(self):
         return f"Archive {self.archive.aid} of {self.original.aid}"

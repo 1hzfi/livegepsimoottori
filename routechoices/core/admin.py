@@ -513,6 +513,7 @@ class DeviceBrandFilter(admin.SimpleListFilter):
             return queryset.filter(
                 Q(user_agent__startswith="ConnectMobile/")
                 | Q(user_agent__startswith="ConnectIQ/")
+                | Q(user_agent__startswith="Garmin ")
                 | Q(user_agent="Mozilla/5.0 ( compatible )")
             )
         if self.value() == "gt06":
@@ -1316,7 +1317,7 @@ class BackupCodeAdmin(admin.ModelAdmin):
 @admin.register(TOTPDevice)
 class TOTPDeviceAdmin(admin.ModelAdmin):
     list_display = ("user", "secret_base32")
-    autocomplete_fields = ["user"]
+    autocomplete_fields = ("user",)
 
     def secret_base32(self, obj):
         return b32encode(obj.key).decode()
@@ -1328,7 +1329,7 @@ admin.site.unregister(WebAuthnKey)
 @admin.register(WebAuthnKey)
 class WebAuthnKeyAdmin(admin.ModelAdmin):
     list_display = ("user", "key_name")
-    autocomplete_fields = ["user"]
+    autocomplete_fields = ("user",)
 
 
 @admin.register(FrontPageFeedback)
