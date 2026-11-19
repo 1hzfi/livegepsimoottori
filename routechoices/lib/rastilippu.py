@@ -77,7 +77,7 @@ def sync_courses_data(event_uuid):
         external_metadata__uuid=event_uuid
     )
     r = requests.get(
-        f"{settings.RASTILIPPU_API_ROOT}integration/event/{event_uuid}/courses",
+        f"{settings.RASTILIPPU_API_ROOT}integration/event/{event_uuid}/courses?preferManual=true",
         headers={"X-Authorization-rs": settings.RASTILIPPU_API_KEY},
         timeout=5,
     )
@@ -95,21 +95,38 @@ def sync_courses_data(event_uuid):
             # event not listed in courses anymore > remove
             event.delete()
 
-    # here course_id_set should contain only ids that are not yet created
+    # From here course_id_set should contain only ids that are not yet created
+    b_start_date = arrow.get(bundle.external_metadata["start_date"]).datetime
+    b_end_date = arrow.get(bundle.external_metadata["end_date"]).datetime
     for course in course_data_by_id.values():
         name = f"{bundle.name} - {course["name"]}"
-        event, _ = Event.objects.get_or_create(
+        same_name_event = (
+            Event.objects.filter(
+                event_set_id=bundle.id,
+                club_id=bundle.club_id,
+                name=course["name"][:255],
+            )
+            .exclude(
+                external_id=f"{RASTILIPPU_PREFIX}{course["id"]}",
+            )
+            .first()
+        )
+        if same_name_event:
+            same_name_event.name = short_random_slug()
+            same_name_event.save()
+        event, created = Event.objects.get_or_create(
             external_id=f"{RASTILIPPU_PREFIX}{course["id"]}",
             event_set_id=bundle.id,
             club_id=bundle.club_id,
             defaults={
                 "name": course["name"][:255],
                 "slug": f"{slugify.slugify(name)[:43]}-{short_random_slug()}",
-                "start_date": arrow.get(
-                    bundle.external_metadata["start_date"]
-                ).datetime,
-                "end_date": arrow.get(bundle.external_metadata["end_date"]).datetime,
+                "start_date": b_start_date,
+                "end_date": b_end_date,
                 "open_registration": True,
                 "allow_route_upload": True,
             },
         )
+        if not created and event.name != course["name"][:255]:
+            event.name = course["name"][:255]
+            event.save()
