@@ -5,6 +5,7 @@ import arrow
 import orjson as json
 import slugify
 from curl_cffi import requests
+from curl_cffi import requests
 from django.conf import settings
 from django_hosts.resolvers import reverse
 
@@ -89,17 +90,15 @@ def sync_courses_data(event_uuid):
     existing_events = bundle.events.all()
     for event in existing_events:
         event_rl_id = event.external_id[len(RASTILIPPU_PREFIX) :]
-        if event_rl_id in course_data_by_id:
-            course_data_by_id.pop(event_rl_id)
-        else:
-            # event not listed in courses anymore > remove
+        if event_rl_id not in course_data_by_id:
+            # event is not listed in courses anymore -> remove
             event.delete()
 
     # From here course_id_set should contain only ids that are not yet created
     b_start_date = arrow.get(bundle.external_metadata["start_date"]).datetime
     b_end_date = arrow.get(bundle.external_metadata["end_date"]).datetime
     for course in course_data_by_id.values():
-        name = f"{bundle.name} - {course["name"]}"
+
         same_name_event = (
             Event.objects.filter(
                 event_set_id=bundle.id,
@@ -114,13 +113,15 @@ def sync_courses_data(event_uuid):
         if same_name_event:
             same_name_event.name = short_random_slug()
             same_name_event.save()
+
+        full_name = f"{bundle.name} - {course["name"]}"
         event, created = Event.objects.get_or_create(
             external_id=f"{RASTILIPPU_PREFIX}{course["id"]}",
             event_set_id=bundle.id,
             club_id=bundle.club_id,
             defaults={
                 "name": course["name"][:255],
-                "slug": f"{slugify.slugify(name)[:43]}-{short_random_slug()}",
+                "slug": f"{slugify.slugify(full_name)[:43]}-{short_random_slug()}",
                 "start_date": b_start_date,
                 "end_date": b_end_date,
                 "open_registration": True,

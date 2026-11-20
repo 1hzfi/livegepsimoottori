@@ -212,20 +212,17 @@ def rastilippu_webhook(request):
             bundle.save()
 
         if course_id_set:
-            external_ids = bundle.events.all().values_list("external_id", flat=True)
-            external_ids = {ext_id[len(RASTILIPPU_PREFIX) :] for ext_id in external_ids}
-            if course_id_set.symmetric_difference(external_ids):
-                try:
-                    sync_courses_data(event_uuid)
-                except Exception:
-                    logger.exception(
-                        "Failed to sync Rastilippu courses data for event %s",
-                        event_uuid,
-                    )
-                    return HttpResponse(
-                        "Rastilippu did not answer",
-                        status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                    )
+            try:
+                sync_courses_data(event_uuid)
+            except Exception:
+                logger.exception(
+                    "Failed to sync Rastilippu courses data for event %s",
+                    event_uuid,
+                )
+                return HttpResponse(
+                    "Rastilippu did not answer",
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
         else:
             bundle.events.all().delete()
 

@@ -589,7 +589,6 @@ class RLWebHookTestCase(EssentialApiBase):
             content_type="json",
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        mock_requests.get.assert_called_once()  # means it hasn't been called this time
         event_set.refresh_from_db()
         self.assertEqual(event_set.events.count(), 4)
         for event in event_set.events.all():
@@ -654,6 +653,147 @@ class RLWebHookTestCase(EssentialApiBase):
         event_set.refresh_from_db()
         self.assertEqual(event_set.events.count(), 4)
         self.assertFalse(event_set.events.filter(external_id="RL-abc").exists())
+
+        mock_response.json.return_value = [
+            {
+                "id": "1514276621",
+                "name": "D-rata",
+                "length": 3100,
+                "controls": [
+                    "75",
+                    "69",
+                    "52",
+                    "50",
+                    "40",
+                    "61",
+                    "51",
+                    "42",
+                    "43",
+                    "44",
+                    "53",
+                    "45",
+                    "60",
+                    "54",
+                    "64",
+                    "63",
+                    "46",
+                    "47",
+                    "49",
+                    "70",
+                    "77",
+                ],
+                "order": 1,
+            },
+            {
+                "id": "1514276622",
+                "name": "F-rata",
+                "length": 3100,
+                "controls": [
+                    "67",
+                    "55",
+                    "52",
+                    "71",
+                    "40",
+                    "61",
+                    "41",
+                    "51",
+                    "43",
+                    "44",
+                    "56",
+                    "45",
+                    "60",
+                    "54",
+                    "59",
+                    "46",
+                    "48",
+                    "47",
+                    "49",
+                    "70",
+                    "77",
+                ],
+                "order": 2,
+            },
+            {
+                "id": "1514276623",
+                "name": "C-rata",
+                "length": 2700,
+                "controls": [
+                    "75",
+                    "52",
+                    "71",
+                    "61",
+                    "41",
+                    "53",
+                    "45",
+                    "60",
+                    "43",
+                    "64",
+                    "63",
+                    "65",
+                    "57",
+                    "48",
+                    "47",
+                    "70",
+                    "77",
+                ],
+                "order": 3,
+            },
+            {
+                "id": "1514276624",
+                "name": "A-rata",
+                "length": 2700,
+                "controls": [
+                    "67",
+                    "52",
+                    "50",
+                    "61",
+                    "41",
+                    "56",
+                    "45",
+                    "44",
+                    "43",
+                    "42",
+                    "54",
+                    "59",
+                    "57",
+                    "48",
+                    "47",
+                    "70",
+                    "77",
+                ],
+                "order": 4,
+            },
+        ]
+        res = self.webhook_client.post(
+            url,
+            {
+                "action": "update_event",
+                "data": {
+                    "club_slug": "kiilat",
+                    "name": "Turku Rastit - 12.08.2026",
+                    "irma_id": "1234",
+                    "uuid": "9fd89ce9-14cf-4a4d-93b3-1c3201c75e23",
+                    "start_datetime": "2026-08-11T14:00:00Z",
+                    "end_datetime": "2026-08-11T19:00:00Z",
+                    "courses": [
+                        "1514276621",
+                        "1514276622",
+                        "1514276623",
+                        "1514276624",
+                    ],
+                },
+            },
+            content_type="json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        event_set.refresh_from_db()
+        self.assertEqual(event_set.events.count(), 4)
+        self.assertEqual(
+            event_set.events.get(external_id="RL-1514276621").name, "D-rata"
+        )
+        self.assertEqual(
+            event_set.events.get(external_id="RL-1514276624").name, "A-rata"
+        )
         # Removing all courses
         res = self.webhook_client.post(
             url,
