@@ -29,7 +29,7 @@
     <div class="container-fluid p-0">
         <div class="row m-0">
             <div class="w-100"
-                 style="clip-path: polygon(0 0, 0 calc(100% - 1em), 100% 100%, 100% 0);{% if event.could_display_maps %}background-image: linear-gradient(0, var(--rc-color-to-trans2), var(--rc-color-to-trans2)), url('{{ event.club.nice_url }}{{ event.slug }}/thumbnail?no-logo=1');background-size: cover;background-position: center;{% else %background-color: var(--bs-secondary-bg);{% endif %}">
+                 style="clip-path: polygon(0 0, 0 calc(100% - 1em), 100% 100%, 100% 0);{% if event.could_display_maps %}background-image: linear-gradient(0, var(--rc-color-to-trans2), var(--rc-color-to-trans2)), url('{{ event.club.nice_url }}{{ event.slug }}/thumbnail?no-logo=1');background-size: cover;background-position: center;{% else %}background-color: var(--bs-secondary-bg);{% endif %}">
                 <div class="container content">
                     <div class="row">
                         {% if event.event_set %}
