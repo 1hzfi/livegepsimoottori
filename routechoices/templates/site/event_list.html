@@ -41,7 +41,7 @@
 {% if club %}
 <div class="container-fluid p-0">
     <div class="row m-0">
-        <div class="w-100 rc-club-w-banner" {% if club.banner %}style="--rc--club-banner-url: url({{ club.banner_url }});"{% endif %}>
+        <div class="w-100 rc-club-w-banner" style="clip-path: polygon(0 0, 0 calc(100% - 2em), 100% 100%, 100% 0);{% if club.banner %}--rc--club-banner-url: url({{ club.banner_url }});{% endif %}">
             <div class="container content">
                 <div class="row">
                     <div>
@@ -60,25 +60,20 @@
                 </div>
             </div>
         </div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1" width="100%" height="2em" preserveAspectRatio="none" fill="var(--bs-body-bg)" style="margin-top: -2em" class="p-0">
-            <path d="M0 0 V1 H1" />
-        </svg>
     </div>
 </div>
 {% else %}
 <div class="container-fluid p-0">
     <div class="row m-0">
         <div class="w-100"
-            style="background-image:linear-gradient(0, var(--rc-gradient-filter), var(--rc-gradient-filter)), linear-gradient(120deg, #db62c9cc 0%, #e3be91cc 100%)">
+            style="background-image:linear-gradient(0, var(--rc-gradient-filter), var(--rc-gradient-filter)), linear-gradient(120deg, #db62c9cc 0%, #e3be91cc 100%);
+            clip-path: polygon(0 0, 0 calc(100% - 2em), 100% 100%, 100% 0);">
             <div class="container content" style="min-height: 100px">
                 <div class="row text-center font-weight-bold">
                     <h1 style="font-family: Atkinson Hyperlegible, sans-serif;font-weight: 700">Featured Events</h1>
                 </div>
             </div>
         </div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1" width="100%" height="2em" preserveAspectRatio="none" fill="var(--bs-body-bg)" style="margin-top: -2em" class="p-0">
-            <path d="M0 0 V1 H1" />
-        </svg>
     </div>
 </div>
 {% endif %}
@@ -92,13 +87,9 @@
         </div>
         {% if event_set.description %}
         <div>
-            <div class="mx-2 pb-2 px-3" style="background-color: var(--bs-secondary-bg);padding-top: 40px;margin-top:-40px">
+            <div class="mx-2 pb-2 px-3" style="background-color: var(--bs-secondary-bg);padding-top: 40px;margin-top:-40px;
+                        clip-path: polygon(0 0, 0 calc(100% - 1em), 100% 100%, 100% 0);">
                 {{ event_set.description|markdownify }}
-            </div>
-            <div class="mx-2 p-0">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1" width="100%" height="2em" preserveAspectRatio="none" fill="var(--bs-secondary-bg)" class="p-0">
-                    <path d="M0 0 H1 V1" />
-                </svg>
             </div>
         </div>
         {% endif %}
