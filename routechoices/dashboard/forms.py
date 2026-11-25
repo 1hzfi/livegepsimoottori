@@ -14,6 +14,7 @@ import resvg_py
 from curl_cffi import requests
 from curl_cffi.requests.exceptions import HTTPError
 from defusedxml import minidom
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files import File
@@ -303,6 +304,13 @@ class ClubDomainForm(ModelForm):
         domain = self.cleaned_data["domain"]
         if not domain:
             return domain
+
+        if domain.endswith(settings.PARENT_HOST):
+            self.add_error(
+                "domain",
+                "You must use your own domain.",
+            )
+
         if not check_dns_records(domain):
             self.add_error(
                 "domain",
