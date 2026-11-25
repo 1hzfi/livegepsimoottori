@@ -305,6 +305,9 @@ class ClubDomainForm(ModelForm):
         if not domain:
             return domain
 
+        if domain.endswith("."):
+            domain = domain[:-1]
+
         if domain.endswith(settings.PARENT_HOST):
             self.add_error(
                 "domain",
