@@ -356,7 +356,7 @@ class RLWebHookTestCase(EssentialApiBase):
             event_set.external_metadata["start_date"], "2026-08-12T12:00:00+00:00"
         )
         self.assertEqual(
-            event_set.external_metadata["end_date"], "2026-08-12T20:00:00+00:00"
+            event_set.external_metadata["end_date"], "2026-08-12T21:00:00+00:00"
         )
         self.assertEqual(
             event_set.external_metadata["uuid"], "9fd89ce9-14cf-4a4d-93b3-1c3201c75e23"
@@ -393,7 +393,7 @@ class RLWebHookTestCase(EssentialApiBase):
             event_set.external_metadata["start_date"], "2026-08-12T13:00:00+00:00"
         )
         self.assertEqual(
-            event_set.external_metadata["end_date"], "2026-08-12T20:00:00+00:00"
+            event_set.external_metadata["end_date"], "2026-08-12T21:00:00+00:00"
         )
         self.assertEqual(
             event_set.external_metadata["uuid"], "9fd89ce9-14cf-4a4d-93b3-1c3201c75e23"
@@ -564,7 +564,7 @@ class RLWebHookTestCase(EssentialApiBase):
             self.assertEqual(
                 event.start_date, arrow.get("2026-08-12T13:00:00Z").datetime
             )
-            self.assertEqual(event.end_date, arrow.get("2026-08-12T20:00:00Z").datetime)
+            self.assertEqual(event.end_date, arrow.get("2026-08-12T21:00:00Z").datetime)
 
         # Change bundle date changes all events schedules
         res = self.webhook_client.post(
@@ -595,7 +595,7 @@ class RLWebHookTestCase(EssentialApiBase):
             self.assertEqual(
                 event.start_date, arrow.get("2026-08-11T13:00:00Z").datetime
             )
-            self.assertEqual(event.end_date, arrow.get("2026-08-11T20:00:00Z").datetime)
+            self.assertEqual(event.end_date, arrow.get("2026-08-11T21:00:00Z").datetime)
 
         # Adding a course
         mock_response.json.return_value.append({"id": "abc", "name": "RR"})
