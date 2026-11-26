@@ -114,16 +114,17 @@ def rastilippu_webhook(request):
             start_date = arrow.get(start_date_raw)
         except ValueError:
             raise BadRequest("Invalid start date")
-        # We shift the start datetime one hour before what is provided
-        start_date = start_date.shift(hours=-1)
 
         if end_date_raw := data.get("end_datetime"):
             try:
-                end_date = arrow.get(end_date_raw).shift(hours=1)
+                end_date = arrow.get(end_date_raw).shift(hours=2)
             except ValueError:
-                raise BadRequest("Invalid start date")
+                raise BadRequest("Invalid end date")
         else:
             end_date = start_date.shift(hours=5)
+
+        # We shift the start datetime one hour before what is provided
+        start_date = start_date.shift(hours=-1)
 
         if end_date <= start_date:
             raise BadRequest("End of event should be after its start")
